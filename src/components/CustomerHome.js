@@ -4,6 +4,15 @@ import CustomerProfile from './CustomerProfile';
 import PrevailingRates from './PrevailingRates';
 import CustomerBalance from './CustomerBalance';
 import { useAuth } from '../contexts/AuthContext';
+import SellBitCoin from './SellBitCoin';
+import BuyBitCoin from './BuyBitCoin';
+import SendBill from './SendBill';
+import PayBill from './PayBill';
+import MarketStrategy from './MarketStrategy';
+import TransactionProcessing from './TransactionProcessing';
+import ServiceFee from './ServiceFee';
+import Messaging from './Messaging';
+import Reporting from './Reporting';
 
 const CustomerHome = ({ history }) => {
   const { logout } = useAuth();
@@ -22,6 +31,15 @@ const CustomerHome = ({ history }) => {
     [r.customerProfile, <CustomerProfile />, true],
     [r.prevailingRates, <PrevailingRates />, true],
     [r.customerBalance, <CustomerBalance />, true],
+    [r.customerSellBitCoin, <SellBitCoin />, true],
+    [r.customerBuyBitCoin, <BuyBitCoin />, true],
+    [r.customerSendBill, <SendBill />, true],
+    [r.customerPayBill, <PayBill />, true],
+    [r.customerMarketStrategy, <MarketStrategy />, true],
+    [r.customerTransactionProcessing, <TransactionProcessing />, true],
+    [r.customerServiceFee, <ServiceFee />, true],
+    [r.customerMessaging, <Messaging />, true],
+    [r.customerReporting, <Reporting />, true],
   ];
 
   return (
