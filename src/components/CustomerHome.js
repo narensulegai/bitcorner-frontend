@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, Route, withRouter } from 'react-router-dom';
-import CustomerProfile from './CustomerProfile';
+import BankAccount from './BankAccount';
 import PrevailingRates from './PrevailingRates';
-import CustomerBalance from './CustomerBalance';
+import Balance from './Balance';
 import { useAuth } from '../contexts/AuthContext';
 import SellBitCoin from './SellBitCoin';
 import BuyBitCoin from './BuyBitCoin';
@@ -28,9 +28,9 @@ const CustomerHome = ({ history }) => {
   };
 
   const routes = [
-    [r.customerProfile, <CustomerProfile />, true],
+    [r.customerProfile, <BankAccount />, true],
     [r.prevailingRates, <PrevailingRates />, true],
-    [r.customerBalance, <CustomerBalance />, true],
+    [r.customerBalance, <Balance />, true],
     [r.customerSellBitCoin, <SellBitCoin />, true],
     [r.customerBuyBitCoin, <BuyBitCoin />, true],
     [r.customerSendBill, <SendBill />, true],

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
-const CustomerProfile = () => {
+const BankAccount = () => {
   const { currentUser, getToken } = useAuth();
   const bankNameRef = useRef(null);
   const countryNameRef = useRef(null);
@@ -61,4 +61,4 @@ const CustomerProfile = () => {
   );
 };
 
-export default CustomerProfile;
+export default BankAccount;

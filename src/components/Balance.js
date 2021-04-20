@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const CustomerBalance = () => {
+const Balance = () => {
   const [customer, setCustomer] = useState(null);
 
   useEffect(() => {
@@ -21,4 +21,4 @@ const CustomerBalance = () => {
   );
 };
 
-export default CustomerBalance;
+export default Balance;
