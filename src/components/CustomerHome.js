@@ -15,7 +15,7 @@ import Messaging from './Messaging';
 import Reporting from './Reporting';
 
 const CustomerHome = ({ history }) => {
-  const { logout } = useAuth();
+  const { logout, currentUser } = useAuth();
   const r = window.appRoutes;
 
   const onLogout = async () => {
@@ -59,14 +59,16 @@ const CustomerHome = ({ history }) => {
         <Link to={r.customerReporting}>Reporting</Link>
         <button className="button no-margin-top" onClick={onLogout}>Logout</button>
       </div>
-      <div>
-        {routes.map((r) => {
-          return (
-            <Route path={r[0]} exact={r[2]} key={r[0]}>
-              {r[1]}
-            </Route>
-          );
-        })}
+      <div className="body">
+        {currentUser
+          ? routes.map((r) => {
+            return (
+              <Route path={r[0]} exact={r[2]} key={r[0]}>
+                {r[1]}
+              </Route>
+            );
+          })
+          : <div className="center">Please login</div>}
       </div>
     </div>
   );
