@@ -1,18 +1,16 @@
 import './App.css';
 import {
-  HashRouter as Router, Switch, Route, withRouter,
+  HashRouter as Router, Switch, Route,
 } from 'react-router-dom';
 import React from 'react';
 
 import Landing from './components/Landing';
 import CustomerSignup from './components/CustomerSignup';
-import CustomerLogin from './components/CustomerLogin';
 import CustomerHome from './components/CustomerHome';
 import { AuthProvider } from './contexts/AuthContext';
 
 const r = {
   home: '/',
-  customerLogin: '/customerLogin',
   customerHome: '/customerHome',
   customerSignup: '/customerSignup',
   customerProfile: '/customerHome/profile',
@@ -34,7 +32,6 @@ window.appRoutes = r;
 export default function App() {
   const routes = [
     [r.home, <Landing />, true],
-    [r.customerLogin, <CustomerLogin />, true],
     [r.customerHome, <CustomerHome />, false],
     [r.customerSignup, <CustomerSignup />, true],
   ];

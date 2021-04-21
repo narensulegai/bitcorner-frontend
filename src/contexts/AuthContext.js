@@ -22,9 +22,12 @@ export function AuthProvider({ children }) {
 
   const signInGoogle = async () => {
     const r = await auth.signInWithPopup(provider);
-    if (!r.user.emailVerified) {
-      await r.user.sendEmailVerification();
-    }
+    return r;
+  };
+
+  const signUpWithGoogle = async () => {
+    const r = await auth.signInWithPopup(provider);
+    await r.user.sendEmailVerification();
     return r;
   };
 
@@ -71,6 +74,7 @@ export function AuthProvider({ children }) {
     updatePassword,
     getToken,
     signInGoogle,
+    signUpWithGoogle,
   };
 
   return (
