@@ -26,7 +26,7 @@ const call = (method, api, data = null) => new Promise(async (res, rej) => {
             res(d);
           } else {
             window.message(null);
-            window.error(d.err);
+            window.error(d.err || d.message);
             rej(d);
           }
         });

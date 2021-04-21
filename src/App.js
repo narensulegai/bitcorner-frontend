@@ -1,5 +1,7 @@
 import './App.css';
-import { HashRouter as Router, Switch, Route } from 'react-router-dom';
+import {
+  HashRouter as Router, Switch, Route, withRouter,
+} from 'react-router-dom';
 import React from 'react';
 
 import Landing from './components/Landing';

@@ -1,18 +1,10 @@
 import React, { useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { getBankAccount } from '../util/fetch/api';
 import { useAuth } from '../contexts/AuthContext';
 
 const Landing = ({ history }) => {
 
-  useEffect(() => {
-    (async () => {
-      // const account = await getBankAccount('90');
-      // console.log(account);
-    })();
-  }, []);
-
-  const { signInGoogle, currentUser } = useAuth();
+  const { signInGoogle } = useAuth();
   const handleOnGoogleLogin = async () => {
     try {
       const r = await signInGoogle();

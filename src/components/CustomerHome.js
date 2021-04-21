@@ -15,6 +15,12 @@ import Messaging from './Messaging';
 import Reporting from './Reporting';
 
 const CustomerHome = ({ history }) => {
+
+  history.listen(() => {
+    window.message(null);
+    window.error(null);
+  });
+
   const { logout, currentUser } = useAuth();
   const r = window.appRoutes;
 

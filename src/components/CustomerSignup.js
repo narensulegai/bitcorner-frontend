@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { updateCustomer } from '../util/fetch/api';
 
 function CustomerSignup({ history }) {
   const nameRef = React.useRef(null);
@@ -12,13 +13,20 @@ function CustomerSignup({ history }) {
     const name = nameRef.current.value;
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
+    let r = null;
     try {
-      const r = await signup(email, password);
-      await r.user.updateProfile({ displayName: name });
-      window.message('Please click on the verification link in your email');
-      history.push(window.appRoutes.customerLogin);
+      r = await signup(email, password, name);
     } catch (e) {
       window.error(e.message);
+    }
+    if (r) {
+      try {
+        await updateCustomer({ email, name });
+        history.push(window.appRoutes.customerLogin);
+        window.message('Please click on the verification link in your email');
+      } catch (e) {
+        r.user.delete();
+      }
     }
   };
 
