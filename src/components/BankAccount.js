@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import { getBankAccount, getCustomer, updateBankAccount } from '../util/fetch/api';
 
 const BankAccount = () => {
-  const { currentUser } = useAuth();
   const bankNameRef = useRef(null);
   const countryNameRef = useRef(null);
   const accountNumberRef = useRef(null);
   const ownersNameRef = useRef(null);
   const addressRef = useRef(null);
   const currencyRef = useRef(null);
+  const balanceRef = useRef(null);
+  const bitconsRef = useRef(null);
   const [bankAccount, setBankAccount] = useState({});
   const [customer, setCustomer] = useState({});
 
@@ -34,6 +34,8 @@ const BankAccount = () => {
       ownerName: ownersNameRef.current.value,
       address: addressRef.current.value,
       currency: currencyRef.current.value,
+      balance: balanceRef.current.value,
+      bitcoins: bitconsRef.current.value,
     };
 
     await updateBankAccount(bankDetails);
@@ -70,6 +72,12 @@ const BankAccount = () => {
         </div>
         <div className="small-margin-top">
           Currency <br /><input type="text" ref={currencyRef} defaultValue={bankAccount.currency} />
+        </div>
+        <div className="small-margin-top">
+          Balance <br /><input type="number" ref={balanceRef} defaultValue={bankAccount.balance} />
+        </div>
+        <div className="small-margin-top">
+          Bitcoins <br /><input type="number" ref={bitconsRef} defaultValue={bankAccount.bitcoins} />
         </div>
         <div className="small-margin-top">
           <button className="small-margin-top button" onClick={handleOnSave}>Save</button>
