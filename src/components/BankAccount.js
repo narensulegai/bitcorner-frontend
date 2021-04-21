@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { getBankAccount, updateBankAccount } from '../util/fetch/api';
+import { getBankAccount, getCustomer, updateBankAccount } from '../util/fetch/api';
 
 const BankAccount = () => {
   const { currentUser } = useAuth();
@@ -11,11 +11,13 @@ const BankAccount = () => {
   const addressRef = useRef(null);
   const currencyRef = useRef(null);
   const [bankAccount, setBankAccount] = useState({});
+  const [customer, setCustomer] = useState({});
 
   useEffect(() => {
     (async () => {
       const bankAccount = await getBankAccount();
-      console.log(await currentUser.getIdToken());
+      const { customer } = await getCustomer();
+      setCustomer(customer);
       if (bankAccount === null) {
         window.message('You dont have a bank account yet, please add one');
       } else {
@@ -43,9 +45,8 @@ const BankAccount = () => {
   return (
     <div>
       <div>
-
-        Welcome {currentUser.displayName}
-        <h6>{currentUser.email} ({currentUser.emailVerified ? 'Verified' : 'Not verified'})</h6>
+        Welcome {customer.name}
+        <h6>{customer.email}</h6>
       </div>
       <div>
         <h2>Bank account</h2>
