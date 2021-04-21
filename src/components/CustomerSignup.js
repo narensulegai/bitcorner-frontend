@@ -22,7 +22,7 @@ function CustomerSignup({ history }) {
     if (r) {
       try {
         await updateCustomer({ email, name });
-        history.push(window.appRoutes.customerLogin);
+        history.push('/');
         window.message('Please click on the verification link in your email');
       } catch (e) {
         r.user.delete();

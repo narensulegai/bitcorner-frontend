@@ -74,7 +74,7 @@ const CustomerHome = ({ history }) => {
         <button className="button no-margin-top" onClick={onLogout}>Logout</button>
       </div>
       <div className="body">
-        {customer && customer.isAuthenticated
+        {customer && customer.isEmailVerified && customer.customer !== null
           ? routes.map((r) => {
             return (
               <Route path={r[0]} exact={r[2]} key={r[0]}>
