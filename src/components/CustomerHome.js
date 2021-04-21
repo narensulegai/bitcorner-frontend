@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, Route, withRouter } from 'react-router-dom';
 import BankAccount from './BankAccount';
 import PrevailingRates from './PrevailingRates';
@@ -13,6 +13,7 @@ import TransactionProcessing from './TransactionProcessing';
 import ServiceFee from './ServiceFee';
 import Messaging from './Messaging';
 import Reporting from './Reporting';
+import { getCustomer } from '../util/fetch/api';
 
 const CustomerHome = ({ history }) => {
 
@@ -22,7 +23,14 @@ const CustomerHome = ({ history }) => {
   });
 
   const { logout, currentUser } = useAuth();
+  const [customer, setCustomer] = useState(null);
   const r = window.appRoutes;
+
+  useEffect(() => {
+    (async () => {
+      setCustomer(await getCustomer());
+    })();
+  }, []);
 
   const onLogout = async () => {
     try {
@@ -66,7 +74,7 @@ const CustomerHome = ({ history }) => {
         <button className="button no-margin-top" onClick={onLogout}>Logout</button>
       </div>
       <div className="body">
-        {currentUser
+        {customer && customer.isAuthenticated
           ? routes.map((r) => {
             return (
               <Route path={r[0]} exact={r[2]} key={r[0]}>
@@ -74,7 +82,7 @@ const CustomerHome = ({ history }) => {
               </Route>
             );
           })
-          : <div className="center">Please login</div>}
+          : <div className="center">Please complete your signup first!</div>}
       </div>
     </div>
   );

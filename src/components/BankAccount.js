@@ -15,6 +15,7 @@ const BankAccount = () => {
   useEffect(() => {
     (async () => {
       const bankAccount = await getBankAccount();
+      console.log(await currentUser.getIdToken());
       if (bankAccount === null) {
         window.message('You dont have a bank account yet, please add one');
       } else {
@@ -42,6 +43,7 @@ const BankAccount = () => {
   return (
     <div>
       <div>
+
         Welcome {currentUser.displayName}
         <h6>{currentUser.email} ({currentUser.emailVerified ? 'Verified' : 'Not verified'})</h6>
       </div>

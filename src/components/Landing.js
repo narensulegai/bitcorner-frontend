@@ -1,22 +1,28 @@
 import React, { useRef } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { getCustomer } from '../util/fetch/api';
 
 const Landing = ({ history }) => {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const { login, signInGoogle } = useAuth();
 
+  const verifyAndRedirect = async () => {
+    const { isEmailVerified, customer } = await getCustomer();
+    if (isEmailVerified && customer !== null) {
+      history.push(window.appRoutes.customerProfile);
+    } else {
+      window.message('Please signup / verify your email first');
+    }
+  };
+
   const handleOnLogin = async () => {
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
     try {
-      const r = await login(email, password);
-      if (r.user.emailVerified) {
-        history.push(window.appRoutes.customerProfile);
-      } else {
-        window.message('Please verify your email first');
-      }
+      await login(email, password);
+      await verifyAndRedirect();
     } catch (e) {
       window.error(e.message);
     }
@@ -24,12 +30,8 @@ const Landing = ({ history }) => {
 
   const handleOnGoogleLogin = async () => {
     try {
-      const r = await signInGoogle();
-      if (r.user.emailVerified) {
-        history.push(window.appRoutes.customerProfile);
-      } else {
-        window.message('Please verify your email first');
-      }
+      await signInGoogle();
+      await verifyAndRedirect();
     } catch (e) {
       window.error(e.message);
     }
