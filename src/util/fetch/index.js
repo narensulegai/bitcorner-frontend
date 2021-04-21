@@ -1,8 +1,11 @@
+import { auth } from '../../firebase';
+
 export const apiUrl = `${process.env.REACT_APP_API_URL || 'localhost:3000'}`;
 
-const call = (method, api, data = null) => new Promise((res, rej) => {
+// eslint-disable-next-line no-async-promise-executor
+const call = (method, api, data = null) => new Promise(async (res, rej) => {
   const headers = { 'Content-Type': 'application/json' };
-  const token = localStorage.getItem('token');
+  const token = await auth.currentUser.getIdToken();
   if (token) {
     headers.authorization = token;
   }
@@ -20,9 +23,9 @@ const call = (method, api, data = null) => new Promise((res, rej) => {
         .then((d) => {
           if (r.status === 200) {
             window.error(null);
-            window.message(null);
             res(d);
           } else {
+            window.message(null);
             window.error(d.err);
             rej(d);
           }

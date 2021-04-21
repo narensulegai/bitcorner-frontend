@@ -1,30 +1,42 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { getBankAccount, updateBankAccount } from '../util/fetch/api';
 
 const BankAccount = () => {
-  const { currentUser, getToken } = useAuth();
+  const { currentUser } = useAuth();
   const bankNameRef = useRef(null);
   const countryNameRef = useRef(null);
   const accountNumberRef = useRef(null);
   const ownersNameRef = useRef(null);
-  const primaryCurrencyRef = useRef(null);
+  const addressRef = useRef(null);
+  const currencyRef = useRef(null);
+  const [bankAccount, setBankAccount] = useState({});
 
   useEffect(() => {
     (async () => {
-      const t = await getToken();
-      console.log(t);
+      const bankAccount = await getBankAccount();
+      if (bankAccount === null) {
+        window.message('You dont have a bank account yet, please add one');
+      } else {
+        setBankAccount(bankAccount);
+      }
     })();
   }, []);
 
-  const handleOnSave = () => {
+  const handleOnSave = async () => {
     const bankDetails = {
       bankName: bankNameRef.current.value,
       country: countryNameRef.current.value,
       accountNumber: accountNumberRef.current.value,
       ownerName: ownersNameRef.current.value,
-      primaryCurrency: primaryCurrencyRef.current.value,
+      address: addressRef.current.value,
+      currency: currencyRef.current.value,
     };
-    console.log(bankDetails);
+
+    await updateBankAccount(bankDetails);
+    const bankAccount = await getBankAccount();
+    setBankAccount(bankAccount);
+    window.message('Updated your bank details');
   };
 
   return (
@@ -34,23 +46,27 @@ const BankAccount = () => {
         <h6>{currentUser.email} ({currentUser.emailVerified ? 'Verified' : 'Not verified'})</h6>
       </div>
       <div>
-        <h2>My bank account</h2>
+        <h2>Bank account</h2>
       </div>
       <div>
         <div className="small-margin-top">
-          Bank name <br /><input type="text" ref={bankNameRef} />
+          Bank name <br /><input type="text" ref={bankNameRef} defaultValue={bankAccount.bankName} />
         </div>
         <div className="small-margin-top">
-          Country <br /><input type="text" ref={countryNameRef} />
+          Country <br /><input type="text" ref={countryNameRef} defaultValue={bankAccount.country} />
         </div>
         <div className="small-margin-top">
-          Account number <br /><input type="text" ref={accountNumberRef} />
+          Account number <br /><input type="text" ref={accountNumberRef}
+            defaultValue={bankAccount.accountNumber} />
         </div>
         <div className="small-margin-top">
-          Owners name <br /><input type="text" ref={ownersNameRef} />
+          Owners name <br /><input type="text" ref={ownersNameRef} defaultValue={bankAccount.ownerName} />
         </div>
         <div className="small-margin-top">
-          Primary currency <br /><input type="text" ref={primaryCurrencyRef} />
+          Address <br /><input type="text" ref={addressRef} defaultValue={bankAccount.address} />
+        </div>
+        <div className="small-margin-top">
+          Currency <br /><input type="text" ref={currencyRef} defaultValue={bankAccount.currency} />
         </div>
         <div className="small-margin-top">
           <button className="small-margin-top button" onClick={handleOnSave}>Save</button>

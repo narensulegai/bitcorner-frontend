@@ -45,7 +45,7 @@ const CustomerHome = ({ history }) => {
   return (
     <div>
       <div className="header">
-        <Link to={r.customerProfile}>My bank account</Link>
+        <Link to={r.customerProfile}>Bank account</Link>
         <Link to={r.prevailingRates}>Prevailing rates</Link>
         <Link to={r.customerBalance}>Balance</Link>
         <Link to={r.customerSellBitCoin}>Sell bitcoin</Link>
