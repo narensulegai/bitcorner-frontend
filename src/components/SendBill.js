@@ -39,6 +39,10 @@ const SendBill = () => {
     window.message('Bill added!');
   };
 
+  const handleOnEditSendBill = (b) => {
+    console.log(b);
+  };
+
   return (
     <div className="flex">
       <div className="flex-full">
@@ -59,7 +63,9 @@ const SendBill = () => {
           Due date <br /><input type="date" ref={dueRef} />
         </div>
         <div>
-          <button className="button" onClick={handleOnSendBill}>Send bill</button>
+          <button className="button" onClick={handleOnSendBill}>
+            Send bill
+          </button>
         </div>
       </div>
       <div className="flex-full">
@@ -72,6 +78,7 @@ const SendBill = () => {
               <td>Currency</td>
               <td>Due date</td>
               <td>Status</td>
+              <td>&nbsp;</td>
             </tr>
           </thead>
           <tbody>
@@ -83,6 +90,11 @@ const SendBill = () => {
                   <td>{b.currency}</td>
                   <td>{new Date(b.due).toDateString()}</td>
                   <td>{b.status}</td>
+                  <td>
+                    <button className="button" onChange={() => { handleOnEditSendBill(b); }}>
+                      Edit
+                    </button>
+                  </td>
                 </tr>
               );
             })}
