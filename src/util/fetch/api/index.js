@@ -10,6 +10,8 @@ export const getSellBitcoins = () => get('sellBitcoin');
 export const addSellBitcoins = (d) => post('sellBitcoin', d);
 export const getBuyBitcoins = () => get('buyBitcoin');
 export const addBuyBitcoins = (d) => post('buyBitcoin', d);
+export const getSendBill = () => get('sendBill');
+export const addSendBill = (d) => post('sendBill', d);
 export const fileUrl = (fileId) => {
   return `${apiUrl}/file/${fileId}`;
 };
