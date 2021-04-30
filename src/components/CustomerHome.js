@@ -22,7 +22,7 @@ const CustomerHome = ({ history }) => {
     window.error(null);
   });
 
-  const { logout, currentUser } = useAuth();
+  const { logout } = useAuth();
   const [customer, setCustomer] = useState(null);
   const r = window.appRoutes;
 
