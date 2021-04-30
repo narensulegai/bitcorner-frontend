@@ -1,20 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { addBuyBitcoins, getBuyBitcoins } from '../util/fetch/api';
+import { setTransactBitcoin, getTransactBitcoin } from '../util/fetch/api';
 
-const BuyBitcoin = () => {
-  const [buyBitcoins, setBuyBitcoins] = useState([]);
+const TransactBitCoin = () => {
+  const [transactBitcoins, setTransactBitcoins] = useState([]);
   const [marketOrder, setIsMarketPrice] = useState(true);
+  const isBuyRef = useRef(null);
   const amountRef = useRef(null);
   const currencyRef = useRef(null);
   const minimumPriceRef = useRef(null);
 
   useEffect(() => {
     (async () => {
-      setBuyBitcoins(await getBuyBitcoins());
+      setTransactBitcoins(await getTransactBitcoin());
     })();
   }, []);
 
-  const handleOnBuyBitcoin = async () => {
+  const handleOnSellBitcoin = async () => {
     const amount = amountRef.current.value;
     const currency = currencyRef.current.value;
     let minPrice = null;
@@ -22,17 +23,15 @@ const BuyBitcoin = () => {
       minPrice = minimumPriceRef.current.value;
     }
     const d = {
+      buy: isBuyRef.current.checked,
       marketOrder,
       minPrice,
       amount,
       currency,
     };
-    await addBuyBitcoins(d);
-    window.message('Added new buy order!');
-    amountRef.current.value = '';
-    currencyRef.current.value = '';
-    setIsMarketPrice(true);
-    setBuyBitcoins(await getBuyBitcoins());
+    await setTransactBitcoin(d);
+    window.message('Added new order!');
+    setTransactBitcoins(await getTransactBitcoin());
   };
 
   const handleOnMarketPriceChange = () => {
@@ -44,9 +43,12 @@ const BuyBitcoin = () => {
 
       <div className="flex-full">
         <div>
-          <h2>Sell Bitcoin</h2>
+          <h2>Transact Bitcoin</h2>
         </div>
         <div>
+          <div className="small-margin-top">
+            Is buy order&nbsp;<input type="checkbox" ref={isBuyRef} />
+          </div>
           <div className="small-margin-top">
             Amount <br /><input type="number" ref={amountRef} defaultValue="0" />
           </div>
@@ -63,18 +65,19 @@ const BuyBitcoin = () => {
             </div>
           )}
           <div>
-            <button className="button" onClick={handleOnBuyBitcoin}>Buy bitcoin</button>
+            <button className="button" onClick={handleOnSellBitcoin}>Transact bitcoin</button>
           </div>
         </div>
       </div>
 
       <div className="flex-full">
-        {buyBitcoins.length === 0
-          ? <div className="center">You have no bit coins to sell</div>
+        <div>{transactBitcoins.length === 0
+          ? <div className="center">You have no transactions</div>
           : (
             <table className="table">
               <thead>
                 <tr>
+                  <td>Transaction type</td>
                   <td>Currency</td>
                   <td>Amount</td>
                   <td>Price type</td>
@@ -82,9 +85,10 @@ const BuyBitcoin = () => {
                 </tr>
               </thead>
               <tbody>
-                {buyBitcoins.map((b) => {
+                {transactBitcoins.reverse().map((b) => {
                   return (
                     <tr key={b.id}>
+                      <td>{b.buy ? 'Buy' : 'Sell'}</td>
                       <td>{b.currency}</td>
                       <td>{b.amount}</td>
                       <td>{b.marketOrder ? 'Market order' : 'Limit order'} </td>
@@ -95,9 +99,10 @@ const BuyBitcoin = () => {
               </tbody>
             </table>
           )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default BuyBitcoin;
+export default TransactBitCoin;

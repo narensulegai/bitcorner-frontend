@@ -4,8 +4,7 @@ import BankAccount from './BankAccount';
 import PrevailingRates from './PrevailingRates';
 import Balance from './Balance';
 import { useAuth } from '../contexts/AuthContext';
-import SellBitCoin from './SellBitCoin';
-import BuyBitCoin from './BuyBitCoin';
+import TransactBitCoin from './TransactBitCoin';
 import SendBill from './SendBill';
 import PayBill from './PayBill';
 import MarketStrategy from './MarketStrategy';
@@ -45,8 +44,7 @@ const CustomerHome = ({ history }) => {
     [r.customerProfile, <BankAccount />, true],
     [r.prevailingRates, <PrevailingRates />, true],
     [r.customerBalance, <Balance />, true],
-    [r.customerSellBitCoin, <SellBitCoin />, true],
-    [r.customerBuyBitCoin, <BuyBitCoin />, true],
+    [r.customerTransactBitCoin, <TransactBitCoin />, true],
     [r.customerSendBill, <SendBill />, true],
     [r.customerPayBill, <PayBill />, true],
     [r.customerMarketStrategy, <MarketStrategy />, true],
@@ -62,8 +60,7 @@ const CustomerHome = ({ history }) => {
         <Link to={r.customerProfile}>Bank account</Link>
         <Link to={r.prevailingRates}>Prevailing rates</Link>
         <Link to={r.customerBalance}>Balance</Link>
-        <Link to={r.customerSellBitCoin}>Sell bitcoin</Link>
-        <Link to={r.customerBuyBitCoin}>Buy bitcoin</Link>
+        <Link to={r.customerTransactBitCoin}>Transact bitcoin</Link>
         <Link to={r.customerSendBill}>Send bill</Link>
         <Link to={r.customerPayBill}>Pay bill</Link>
         <Link to={r.customerMarketStrategy}>Market strategy</Link>
