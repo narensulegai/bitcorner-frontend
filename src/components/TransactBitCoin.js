@@ -77,6 +77,7 @@ const TransactBitCoin = () => {
             <table className="table">
               <thead>
                 <tr>
+                  <td>Order Id</td>
                   <td>Transaction type</td>
                   <td>Currency</td>
                   <td>Amount</td>
@@ -88,6 +89,7 @@ const TransactBitCoin = () => {
                 {transactBitcoins.reverse().map((b) => {
                   return (
                     <tr key={b.id}>
+                      <td>{b.id}</td>
                       <td>{b.buy ? 'Buy' : 'Sell'}</td>
                       <td>{b.currency}</td>
                       <td>{b.amount}</td>
