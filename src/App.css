@@ -25,6 +25,10 @@ body {
     justify-content: space-around;
 }
 
+.flex-justify-content-space-between{
+    justify-content: space-between;
+}
+
 .flex-full {
     flex: 1;
 }
