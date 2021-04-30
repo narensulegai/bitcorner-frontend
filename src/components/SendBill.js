@@ -10,7 +10,6 @@ const SendBill = () => {
   const dueRef = useRef(null);
   const editDescriptionRef = useRef(null);
   const editAmountRef = useRef(null);
-  const editStatusRef = useRef(null);
 
   const [sendBills, setSendBills] = useState([]);
   const [editSendBills, setEditSendBills] = useState({});
@@ -53,19 +52,26 @@ const SendBill = () => {
   const handleOnSaveEditSendBill = async () => {
     const description = editDescriptionRef.current.value;
     const amount = editAmountRef.current.value;
-    const status = editStatusRef.current.value;
     const d = {
       ...editSendBills,
       description,
       amount,
-      status,
     };
     await editSendBill(d);
     window.message('Update bill!');
     setOpen(!open);
     setSendBills(await getSendBill());
   };
-
+  const handleOnSaveCancelSendBill = async () => {
+    const d = {
+      ...editSendBills,
+      status: 'CANCELLED',
+    };
+    await editSendBill(d);
+    window.message('Cancelled bill!');
+    setOpen(!open);
+    setSendBills(await getSendBill());
+  };
   const handleClose = () => {
     setOpen(!open);
   };
@@ -83,13 +89,12 @@ const SendBill = () => {
             Amount <br />
             <input type="number" ref={editAmountRef} defaultValue={editSendBills.amount} />
           </div>
-          <div className="small-margin-top">
-            Status <br />
-            <input type="text" ref={editStatusRef} defaultValue={editSendBills.status} />
-          </div>
-          <div className="flex flex-justify-content-space-around">
+          <div className="flex flex-justify-content-space-between">
             <button className="button" onClick={handleOnSaveEditSendBill}>
               Edit bill
+            </button>
+            <button className="button" onClick={handleOnSaveCancelSendBill}>
+              Cancel bill
             </button>
             <button className="button" onClick={handleClose}>
               Cancel
@@ -130,6 +135,7 @@ const SendBill = () => {
                 <td>Payers Email</td>
                 <td>Description</td>
                 <td>Currency</td>
+                <td>Amount</td>
                 <td>Due date</td>
                 <td>Status</td>
                 <td>&nbsp;</td>
@@ -142,6 +148,7 @@ const SendBill = () => {
                     <td>{b.email}</td>
                     <td>{b.description}</td>
                     <td>{b.currency}</td>
+                    <td>{b.amount}</td>
                     <td>{new Date(b.due).toDateString()}</td>
                     <td>{b.status}</td>
                     <td>

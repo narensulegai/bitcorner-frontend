@@ -11,6 +11,10 @@ export const setTransactBitcoin = (d) => post('transactBitcoin', d);
 export const getSendBill = () => get('sendBill');
 export const addSendBill = (d) => post('sendBill', d);
 export const editSendBill = (d) => put('sendBill', d);
+
+export const getBill = () => get('payBill');
+
+
 export const getBalance = () => get('balance');
 export const setBalance = (d) => post('balance', d);
 export const fileUrl = (fileId) => {
