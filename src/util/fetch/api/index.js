@@ -13,10 +13,16 @@ export const addSendBill = (d) => post('sendBill', d);
 export const editSendBill = (d) => put('sendBill', d);
 
 export const getBill = () => get('payBill');
-
+export const getPrevailingRates = () => get('prevailingRates');
 
 export const getBalance = () => get('balance');
 export const setBalance = (d) => post('balance', d);
 export const fileUrl = (fileId) => {
   return `${apiUrl}/file/${fileId}`;
 };
+
+export const currencyList = [
+  { code: 'USD', symbol: '$' },
+  { code: 'GBP', symbol: 'P' },
+  { code: 'INR', symbol: 'R' },
+];

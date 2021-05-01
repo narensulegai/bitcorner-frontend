@@ -12,6 +12,7 @@ const TransactBitCoin = () => {
   const currencyRef = useRef(null);
   const minimumPriceRef = useRef(null);
   const editAmountRef = useRef(null);
+  const bitcoinsRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -21,6 +22,7 @@ const TransactBitCoin = () => {
 
   const handleOnSellBitcoin = async () => {
     const amount = amountRef.current.value;
+    const bitcoins = bitcoinsRef.current.value;
     const currency = currencyRef.current.value;
     let minPrice = null;
     if (!marketOrder) {
@@ -31,6 +33,7 @@ const TransactBitCoin = () => {
       marketOrder,
       minPrice,
       amount,
+      bitcoins,
       currency,
     };
     await setTransactBitcoin(d);
@@ -101,6 +104,9 @@ const TransactBitCoin = () => {
               Is buy order&nbsp;<input type="checkbox" ref={isBuyRef} />
             </div>
             <div className="small-margin-top">
+              Bitcoins <br /><input type="number" ref={bitcoinsRef} defaultValue="0" />
+            </div>
+            <div className="small-margin-top">
               Amount <br /><input type="number" ref={amountRef} defaultValue="0" />
             </div>
             <div className="small-margin-top">
@@ -132,6 +138,7 @@ const TransactBitCoin = () => {
                     <td>Transaction type</td>
                     <td>Currency</td>
                     <td>Amount</td>
+                    <td>Bitcoins</td>
                     <td>Price type</td>
                     <td>Minimum price</td>
                     <td>Status</td>
@@ -146,6 +153,7 @@ const TransactBitCoin = () => {
                         <td>{b.buy ? 'Buy' : 'Sell'}</td>
                         <td>{b.currency}</td>
                         <td>{b.amount}</td>
+                        <td>{b.bitcoins}</td>
                         <td>{b.marketOrder ? 'Market order' : 'Limit order'} </td>
                         <td>{b.minPrice}</td>
                         <td>{b.status}</td>
