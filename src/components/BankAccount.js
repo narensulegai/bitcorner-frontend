@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { getBankAccount, getCustomer, updateBankAccount } from '../util/fetch/api';
+import {
+  currencyList, getBankAccount, getCustomer, updateBankAccount,
+} from '../util/fetch/api';
 
 const BankAccount = () => {
   const bankNameRef = useRef(null);
@@ -8,7 +10,7 @@ const BankAccount = () => {
   const ownersNameRef = useRef(null);
   const addressRef = useRef(null);
   const currencyRef = useRef(null);
-  const [bankAccount, setBankAccount] = useState({});
+  const [bankAccount, setBankAccount] = useState(null);
   const [customer, setCustomer] = useState({});
 
   useEffect(() => {
@@ -40,7 +42,7 @@ const BankAccount = () => {
     window.message('Updated your bank details');
   };
 
-  return (
+  return bankAccount ? (
     <div>
       <div>
         Welcome {customer.name}
@@ -67,7 +69,12 @@ const BankAccount = () => {
           Address <br /><input type="text" ref={addressRef} defaultValue={bankAccount.address} />
         </div>
         <div className="small-margin-top">
-          Primary currency <br /><input type="text" ref={currencyRef} defaultValue={bankAccount.primaryCurrency} />
+          Primary currency <br />
+          <select ref={currencyRef} defaultValue={bankAccount.primaryCurrency}>
+            {currencyList.map((c, i) => {
+              return <option key={i} value={c.code}>{c.code}</option>;
+            })}
+          </select>
         </div>
         <div className="small-margin-top">
           <button className="small-margin-top button" onClick={handleOnSave}>Save</button>
@@ -75,7 +82,7 @@ const BankAccount = () => {
       </div>
 
     </div>
-  );
+  ) : <div>Loading bank account</div>;
 };
 
 export default BankAccount;

@@ -22,7 +22,9 @@ export const fileUrl = (fileId) => {
 };
 
 export const currencyList = [
-  { code: 'USD', symbol: '$' },
-  { code: 'GBP', symbol: 'P' },
-  { code: 'INR', symbol: 'R' },
+  { code: 'USD' },
+  { code: 'GBP' },
+  { code: 'INR' },
+  { code: 'EUR' },
+  { code: 'RMB' },
 ];
