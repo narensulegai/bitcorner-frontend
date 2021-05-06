@@ -14,15 +14,18 @@ const Balance = () => {
   });
 
   const loadBalance = async () => {
-    const b = _.keyBy(await getBalance(), 'currency');
-    setBalances({
-      USD: b.USD.balance,
-      EUR: b.EUR.balance,
-      GBP: b.GBP.balance,
-      INR: b.INR.balance,
-      RMB: b.RMB.balance,
-      BITCOIN: b.BITCOIN.balance,
-    });
+    const balances = await getBalance();
+    if (balances.length) {
+      const b = _.keyBy(balances, 'currency');
+      setBalances({
+        USD: b.USD.balance,
+        EUR: b.EUR.balance,
+        GBP: b.GBP.balance,
+        INR: b.INR.balance,
+        RMB: b.RMB.balance,
+        BITCOIN: b.BITCOIN.balance,
+      });
+    }
   };
 
   useEffect(() => {
