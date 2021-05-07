@@ -10,7 +10,6 @@ const TransactBitCoin = () => {
   const isBuyRef = useRef(null);
   const amountRef = useRef(null);
   const currencyRef = useRef(null);
-  const minimumPriceRef = useRef(null);
   const editAmountRef = useRef(null);
   const bitcoinsRef = useRef(null);
 
@@ -21,17 +20,15 @@ const TransactBitCoin = () => {
   }, []);
 
   const handleOnSellBitcoin = async () => {
-    const amount = amountRef.current.value;
+    let amount = null;
     const bitcoins = bitcoinsRef.current.value;
     const currency = currencyRef.current.value;
-    let minPrice = null;
     if (!marketOrder) {
-      minPrice = minimumPriceRef.current.value;
+      amount = amountRef.current.value;
     }
     const d = {
       buy: isBuyRef.current.checked,
       marketOrder,
-      minPrice,
       amount,
       bitcoins,
       currency,
@@ -107,9 +104,6 @@ const TransactBitCoin = () => {
               Bitcoins <br /><input type="number" ref={bitcoinsRef} defaultValue="0" />
             </div>
             <div className="small-margin-top">
-              Amount <br /><input type="number" ref={amountRef} defaultValue="0" />
-            </div>
-            <div className="small-margin-top">
               Currency <br /><input type="text" ref={currencyRef} defaultValue="USD" />
             </div>
             <div className="small-margin-top">
@@ -118,7 +112,7 @@ const TransactBitCoin = () => {
             </div>
             {!marketOrder && (
               <div className="small-margin-top">
-                Minimum price <br /><input type="number" ref={minimumPriceRef} defaultValue="0" />
+                Amount <br /><input type="number" ref={amountRef} defaultValue="0" />
               </div>
             )}
             <div>
@@ -140,7 +134,6 @@ const TransactBitCoin = () => {
                     <td>Amount</td>
                     <td>Bitcoins</td>
                     <td>Price type</td>
-                    <td>Minimum price</td>
                     <td>Status</td>
                     <td>&nbsp;</td>
                   </tr>
@@ -155,7 +148,6 @@ const TransactBitCoin = () => {
                         <td>{b.amount}</td>
                         <td>{b.bitcoins}</td>
                         <td>{b.marketOrder ? 'Market order' : 'Limit order'} </td>
-                        <td>{b.minPrice}</td>
                         <td>{b.status}</td>
                         <td>
                           <button className="button" onClick={() => { handleOnEdit(b); }}>
