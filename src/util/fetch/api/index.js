@@ -16,6 +16,7 @@ export const getBill = () => get('payBill');
 export const getPrevailingRates = () => get('prevailingRates');
 
 export const getBalance = () => get('balance');
+export const getExchangeRates = () => get('balance/rates');
 export const setBalance = (d) => post('balance', d);
 export const fileUrl = (fileId) => {
   return `${apiUrl}/file/${fileId}`;
