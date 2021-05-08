@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import {
   editSendBill, getBalance, getBill, getExchangeRates, currencyList,
@@ -7,10 +7,10 @@ import {
 const PayBill = () => {
   const [bills, setBills] = useState([]);
   const [currentBill, setCurrentBill] = useState(null);
-  const currRef = useRef(null);
   const [exchangeRate, setExchangeRate] = useState(1);
   const [serviceFee, setServiceFee] = useState(0);
   const [billAmount, setBillAmount] = useState(0);
+  const [totalBalance, setTotalBalance] = useState(0);
   const [exchangeRates, setExchangeRates] = useState({});
   const [balance, setBalances] = useState({
     USD: 0,
@@ -52,10 +52,9 @@ const PayBill = () => {
       return b.id === parseInt(e.target.value);
     });
     setCurrentBill(bill[0]);
-    console.log(currentBill);
   };
 
-  const handleBalance = () => {
+  const handleBalance = async (e) => {
     const balances = [
       { currency: 'USD', balance: balance.USD },
       { currency: 'EUR', balance: balance.EUR },
@@ -64,26 +63,21 @@ const PayBill = () => {
       { currency: 'RMB', balance: balance.RMB },
       { currency: 'BITCOIN', balance: balance.BITCOIN },
     ];
-    const selectedCurrency = balances.filter((b) => b.currency === currRef.current.value);
-    let totalBalance = selectedCurrency['balance'];
-    setBillAmount();
-    if (currRef.current.value === 'BITCOIN') {
-      // bitcoin logic
-    } else if (currRef.current.value !== currentBill.currency) {
-      setExchangeRate(exchangeRates[currentBill.currency].rates[currRef.current.value]);
-      setServiceFee(billAmount * 0.0001);
 
-      totalBalance *= exchangeRate;
-      totalBalance += serviceFee;
-    } else {
-      setExchangeRate(1);
-      setServiceFee(0);
+    let lExchangeRate = 1;
+    let lServiceFee = 0;
+    const selectedCurrency = balances.filter((b) => b.currency === e.target.value);
+    if (e.target.value === 'BITCOIN') {
+      // bitcoin exchange logic
+    } else if (e.target.value !== currentBill.currency) {
+      lExchangeRate = exchangeRates[currentBill.currency].rates[e.target.value];
+      lServiceFee = currentBill.amount * lExchangeRate * 0.0001;
     }
-    setBillAmount(currentBill.amount * exchangeRate + serviceFee);
-    console.log(exchangeRate + ' ' + billAmount + ' ' + serviceFee);
-    if (totalBalance < billAmount) {
-      alert('Not enough funds, pick different currency');
-    }
+
+    setTotalBalance(selectedCurrency[0].balance);
+    setBillAmount(currentBill.amount * lExchangeRate + lServiceFee);
+    setExchangeRate(lExchangeRate);
+    setServiceFee(lServiceFee);
   };
   const rejectBill = async () => {
     const rejectedBill = { ...currentBill, status: 'REJECTED' };
@@ -110,15 +104,21 @@ const PayBill = () => {
             <div>
               <div>
                 Currency to pay bill
-                <select ref={currRef} defaultValue={currentBill.currency} onChange={handleBalance}>
+                <select defaultValue={currentBill.currency} onChange={handleBalance}>
                   {currencyList.map((c, i) => {
                     return <option key={i} value={c.code}>{c.code}</option>;
                   })}
                 </select>
               </div>
-              <div>
-                ExchangeRate: {exchangeRate} Service Fee: {serviceFee} Total Charge: {billAmount}
+              <div className="small-margin-top">
+                Total Charge: {billAmount} <span />
+                Available Balance: {totalBalance}
               </div>
+              <div>
+                ExchangeRate: {exchangeRate} <span />
+                Service Fee: {serviceFee}
+              </div>
+              <hr />
               <div>
                 Pay to {currentBill.customer.name} ({currentBill.customer.bankAccount.bankName})
               </div>
