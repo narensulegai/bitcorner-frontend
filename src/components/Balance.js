@@ -87,8 +87,8 @@ const Balance = () => {
                 onChange={(e) => handleOnBalanceChange('GBP', e.target.value)} />
             </div>
             <div className="small-margin-top">
-              INR <br /><input type="number" value={balance.GBP}
-                onChange={(e) => handleOnBalanceChange('GBP', e.target.value)} />
+              INR <br /><input type="number" value={balance.INR}
+                onChange={(e) => handleOnBalanceChange('INR', e.target.value)} />
             </div>
             <div className="small-margin-top">
               RMB <br /><input type="number" value={balance.RMB}
