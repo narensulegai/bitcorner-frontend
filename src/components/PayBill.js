@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import {
-  editSendBill, getBalance, getBill, getExchangeRates, currencyList,
+  editSendBill, getBalance, getBill, getExchangeRates, currencyList, setBalance,
 } from '../util/fetch/api';
 
 const PayBill = () => {
@@ -11,6 +11,7 @@ const PayBill = () => {
   const [serviceFee, setServiceFee] = useState(0);
   const [billAmount, setBillAmount] = useState(0);
   const [totalBalance, setTotalBalance] = useState(0);
+  const [billCurrency, setBillCurrency] = useState('USD');
   const [exchangeRates, setExchangeRates] = useState({});
   const [balance, setBalances] = useState({
     USD: 0,
@@ -35,6 +36,7 @@ const PayBill = () => {
       });
     }
   };
+
   useEffect(() => {
     (async () => {
       const bills = await getBill();
@@ -74,10 +76,11 @@ const PayBill = () => {
       lServiceFee = currentBill.amount * lExchangeRate * 0.0001;
     }
 
+    setBillCurrency(e.target.value);
     setTotalBalance(selectedCurrency[0].balance);
     setBillAmount(currentBill.amount * lExchangeRate + lServiceFee);
-    setExchangeRate(lExchangeRate);
-    setServiceFee(lServiceFee);
+    setExchangeRate(lExchangeRate.toFixed(9));
+    setServiceFee(lServiceFee.toFixed(9));
   };
   const rejectBill = async () => {
     const rejectedBill = { ...currentBill, status: 'REJECTED' };
@@ -86,9 +89,37 @@ const PayBill = () => {
   };
 
   const payBill = async () => {
-    const paidBill = { ...currentBill, status: 'PAID' };
-    await editSendBill(paidBill);
-    window.message('Bill was paid');
+    const curBalance = totalBalance - billAmount;
+    if (totalBalance < billAmount) {
+      window.error('Insufficient balance for bill payment');
+    } else if (currentBill.status === 'PAID' || currentBill.status === 'REJECTED' || currentBill.status === 'CANCELLED') {
+      window.error('Bill status cannot be changed after settling');
+    } else {
+      const bs = await getBalance();
+      const d = [
+        { currency: 'USD', balance: balance.USD },
+        { currency: 'EUR', balance: balance.EUR },
+        { currency: 'GBP', balance: balance.GBP },
+        { currency: 'INR', balance: balance.INR },
+        { currency: 'RMB', balance: balance.RMB },
+        { currency: 'BITCOIN', balance: balance.BITCOIN },
+      ];
+      const selectedCurrency = d.filter((b) => b.currency === billCurrency);
+      selectedCurrency[0].balance = curBalance.toFixed(9);
+      if (bs.length) {
+        const b = _.keyBy(bs, 'currency');
+        d[0].id = b.USD.id;
+        d[1].id = b.EUR.id;
+        d[2].id = b.GBP.id;
+        d[3].id = b.INR.id;
+        d[4].id = b.RMB.id;
+        d[5].id = b.BITCOIN.id;
+      }
+      await setBalance(d);
+      const paidBill = { ...currentBill, status: 'PAID' };
+      await editSendBill(paidBill);
+      window.message('Bill was paid');
+    }
   };
   return (
     <div className="body">
@@ -111,7 +142,7 @@ const PayBill = () => {
                 </select>
               </div>
               <div className="small-margin-top">
-                Total Charge: {billAmount} <span />
+                Total Charge: {billAmount.toFixed(9)} <span />
                 Available Balance: {totalBalance}
               </div>
               <div>
