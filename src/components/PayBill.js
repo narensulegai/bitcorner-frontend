@@ -1,7 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import _ from 'lodash';
 import {
-  editSendBill, getBalance, getBill, getExchangeRates, currencyList,
+  editSendBill,
+  getBalance,
+  getBill,
+  getExchangeRates,
+  currencyList,
+  getBTCLastBid,
 } from '../util/fetch/api';
 
 const PayBill = () => {
@@ -12,6 +17,10 @@ const PayBill = () => {
   const [serviceFee, setServiceFee] = useState(0);
   const [billAmount, setBillAmount] = useState(0);
   const [exchangeRates, setExchangeRates] = useState({});
+  const [btcLastBid, setBTCLastBid] = useState({});
+  const [margin, setMargin] = useState(0);
+  const [isBTCInvolved, setIsBTCInvolved] = useState(false);
+  const [btcRate, setBTCRate] = useState(1);
   const [balance, setBalances] = useState({
     USD: 0,
     EUR: 0,
@@ -42,6 +51,7 @@ const PayBill = () => {
         setBills(bills);
         setCurrentBill(bills[0]);
       }
+      setBTCLastBid(await getBTCLastBid());
       setExchangeRates(await getExchangeRates());
       await loadBalance();
     })();
@@ -64,18 +74,71 @@ const PayBill = () => {
       { currency: 'RMB', balance: balance.RMB },
       { currency: 'BITCOIN', balance: balance.BITCOIN },
     ];
-    const selectedCurrency = balances.filter((b) => b.currency === currRef.current.value);
+    const selectedCurrency = balances.filter(
+      (b) => b.currency === currRef.current.value
+    );
     let totalBalance = selectedCurrency['balance'];
     setBillAmount();
-    if (currRef.current.value === 'BITCOIN') {
+
+    if (
+      currRef.current.value === 'BITCOIN' ||
+      currentBill.currency === 'BITCOIN'
+    ) {
       // bitcoin logic
+      setIsBTCInvolved(true);
+      if (btcLastBid) {
+        const isMarketOrder = btcLastBid.marketOrder;
+        if (isMarketOrder) {
+          if (btcLastBid.amount) {
+            setBTCRate(btcLastBid.amount);
+          } else {
+            setBTCRate(1);
+          }
+        } else {
+          if (btcLastBid.minPrice) {
+            setBTCRate(btcLastBid.minPrice);
+          } else {
+            setBTCRate(1);
+          }
+        }
+        if (
+          currRef.current.value !== 'BITCOIN' &&
+          currentBill.currency === 'BITCOIN'
+        ) {
+          setExchangeRate(
+            exchangeRates[currentBill.currency].rates[currRef.current.value]
+          );
+          let totalAmount = billAmount * btcRate * exchangeRate;
+          setMargin(totalAmount * 0.05);
+          totalAmount -= margin;
+        } else if (
+          currRef.current.value === 'BITCOIN' &&
+          currentBill.currency !== 'BITCOIN'
+        ) {
+          setExchangeRate(
+            exchangeRates[currentBill.currency].rates[currRef.current.value]
+          );
+          let totalAmount = billAmount / (btcRate * exchangeRate);
+          setMargin(totalAmount * 0.05);
+          totalAmount -= margin;
+        } else {
+          // if target currency and selected currency for payment are same
+          // console.log()
+        }
+      } else {
+        alert('Could not fetch BitCoin price, choose a different currency.');
+      }
     } else if (currRef.current.value !== currentBill.currency) {
-      setExchangeRate(exchangeRates[currentBill.currency].rates[currRef.current.value]);
+      setIsBTCInvolved(false);
+      setExchangeRate(
+        exchangeRates[currentBill.currency].rates[currRef.current.value]
+      );
       setServiceFee(billAmount * 0.0001);
 
       totalBalance *= exchangeRate;
       totalBalance += serviceFee;
     } else {
+      setIsBTCInvolved(false);
       setExchangeRate(1);
       setServiceFee(0);
     }
@@ -98,40 +161,59 @@ const PayBill = () => {
   };
   return (
     <div className="body">
-      Select a bill to pay&nbsp;<select onChange={handleOnBillChange}>
+      Select a bill to pay&nbsp;
+      <select onChange={handleOnBillChange}>
         {bills.map((b) => {
-          return <option value={b.id} key={b.id}>#{b.id} from {b.customer.name}</option>;
+          return (
+            <option value={b.id} key={b.id}>
+              #{b.id} from {b.customer.name}
+            </option>
+          );
         })}
       </select>
-      {currentBill == null
-        ? <div>Please select a bill to view</div>
-        : (
+      {currentBill == null ? (
+        <div>Please select a bill to view</div>
+      ) : (
+        <div>
           <div>
             <div>
-              <div>
-                Currency to pay bill
-                <select ref={currRef} defaultValue={currentBill.currency} onChange={handleBalance}>
-                  {currencyList.map((c, i) => {
-                    return <option key={i} value={c.code}>{c.code}</option>;
-                  })}
-                </select>
-              </div>
-              <div>
-                ExchangeRate: {exchangeRate} Service Fee: {serviceFee} Total Charge: {billAmount}
-              </div>
-              <div>
-                Pay to {currentBill.customer.name} ({currentBill.customer.bankAccount.bankName})
-              </div>
-              <div>
-                {currentBill.currency} {currentBill.amount} {currentBill.status}
-              </div>
+              Currency to pay bill
+              <select
+                ref={currRef}
+                defaultValue={currentBill.currency}
+                onChange={handleBalance}
+              >
+                {currencyList.map((c, i) => {
+                  return (
+                    <option key={i} value={c.code}>
+                      {c.code}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
-            <div className="flex-justify-content-space-between">
-              <button className="button" onClick={rejectBill}>Reject</button>
-              <button className="button small-margin-left" onClick={payBill}>Pay</button>
+            <div>
+              ExchangeRate: {exchangeRate} Service Fee: {serviceFee} Total
+              Charge: {billAmount}
+            </div>
+            <div>
+              Pay to {currentBill.customer.name} (
+              {currentBill.customer.bankAccount.bankName})
+            </div>
+            <div>
+              {currentBill.currency} {currentBill.amount} {currentBill.status}
             </div>
           </div>
-        )}
+          <div className="flex-justify-content-space-between">
+            <button className="button" onClick={rejectBill}>
+              Reject
+            </button>
+            <button className="button small-margin-left" onClick={payBill}>
+              Pay
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

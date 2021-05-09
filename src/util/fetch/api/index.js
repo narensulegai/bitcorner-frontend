@@ -1,6 +1,4 @@
-import {
-  get, post, destroy, put, apiUrl,
-} from '..';
+import { get, post, destroy, put, apiUrl } from '..';
 
 export const getBankAccount = () => get('bankAccount');
 export const updateBankAccount = (d) => post('bankAccount', d);
@@ -14,6 +12,7 @@ export const editSendBill = (d) => put('sendBill', d);
 
 export const getBill = () => get('payBill');
 export const getPrevailingRates = () => get('prevailingRates');
+export const getBTCLastBid = () => get('payBill/getBTCLastBid');
 
 export const getBalance = () => get('balance');
 export const getExchangeRates = () => get('balance/rates');
@@ -28,4 +27,5 @@ export const currencyList = [
   { code: 'INR' },
   { code: 'EUR' },
   { code: 'RMB' },
+  { code: 'BITCOIN' },
 ];
