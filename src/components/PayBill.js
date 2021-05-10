@@ -43,6 +43,7 @@ const PayBill = () => {
       if (bills.length) {
         setBills(bills);
         setCurrentBill(bills[0]);
+        setBillAmount(bills[0].amount);
       }
       setExchangeRates(await getExchangeRates());
       await loadBalance();
@@ -83,39 +84,47 @@ const PayBill = () => {
     setServiceFee(lServiceFee.toFixed(9));
   };
   const rejectBill = async () => {
-    const rejectedBill = { ...currentBill, status: 'REJECTED' };
-    await editSendBill(rejectedBill);
-    window.message('Bill was rejected');
+    if (currentBill.status === 'PAID' || currentBill.status === 'REJECTED' || currentBill.status === 'CANCELLED') {
+      window.error('Bill status cannot be changed after settling');
+    } else {
+      const rejectedBill = { ...currentBill, status: 'REJECTED' };
+      await editSendBill(rejectedBill);
+      window.message('Bill was rejected');
+    }
+  };
+
+  const completeTransaction = async () => {
+    const curBalance = totalBalance - billAmount;
+    const bs = await getBalance();
+    const d = [
+      { currency: 'USD', balance: balance.USD },
+      { currency: 'EUR', balance: balance.EUR },
+      { currency: 'GBP', balance: balance.GBP },
+      { currency: 'INR', balance: balance.INR },
+      { currency: 'RMB', balance: balance.RMB },
+      { currency: 'BITCOIN', balance: balance.BITCOIN },
+    ];
+    const selectedCurrency = d.filter((b) => b.currency === billCurrency);
+    selectedCurrency[0].balance = curBalance.toFixed(9);
+    if (bs.length) {
+      const b = _.keyBy(bs, 'currency');
+      d[0].id = b.USD.id;
+      d[1].id = b.EUR.id;
+      d[2].id = b.GBP.id;
+      d[3].id = b.INR.id;
+      d[4].id = b.RMB.id;
+      d[5].id = b.BITCOIN.id;
+    }
+    await setBalance(d);
   };
 
   const payBill = async () => {
-    const curBalance = totalBalance - billAmount;
-    if (totalBalance < billAmount) {
-      window.error('Insufficient balance for bill payment');
-    } else if (currentBill.status === 'PAID' || currentBill.status === 'REJECTED' || currentBill.status === 'CANCELLED') {
+    if (currentBill.status === 'PAID' || currentBill.status === 'REJECTED' || currentBill.status === 'CANCELLED') {
       window.error('Bill status cannot be changed after settling');
+    } else if (totalBalance < billAmount) {
+      window.error('Insufficient balance for bill payment');
     } else {
-      const bs = await getBalance();
-      const d = [
-        { currency: 'USD', balance: balance.USD },
-        { currency: 'EUR', balance: balance.EUR },
-        { currency: 'GBP', balance: balance.GBP },
-        { currency: 'INR', balance: balance.INR },
-        { currency: 'RMB', balance: balance.RMB },
-        { currency: 'BITCOIN', balance: balance.BITCOIN },
-      ];
-      const selectedCurrency = d.filter((b) => b.currency === billCurrency);
-      selectedCurrency[0].balance = curBalance.toFixed(9);
-      if (bs.length) {
-        const b = _.keyBy(bs, 'currency');
-        d[0].id = b.USD.id;
-        d[1].id = b.EUR.id;
-        d[2].id = b.GBP.id;
-        d[3].id = b.INR.id;
-        d[4].id = b.RMB.id;
-        d[5].id = b.BITCOIN.id;
-      }
-      await setBalance(d);
+      await completeTransaction();
       const paidBill = { ...currentBill, status: 'PAID' };
       await editSendBill(paidBill);
       window.message('Bill was paid');
