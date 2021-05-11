@@ -13,6 +13,7 @@ export const addSendBill = (d) => post('sendBill', d);
 export const editSendBill = (d) => put('sendBill', d);
 
 export const getBill = () => get('payBill');
+export const settlePayBill = (d) => put('payBill', d);
 export const getPrevailingRates = () => get('prevailingRates');
 
 export const getBalance = () => get('balance');

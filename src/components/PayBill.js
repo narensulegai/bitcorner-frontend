@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import _ from 'lodash';
 import {
-  editSendBill, getBalance, getBill, getExchangeRates, currencyList, setBalance,
+  editSendBill, getBalance, getBill, getExchangeRates, currencyList, setBalance, settlePayBill,
 } from '../util/fetch/api';
 
 const PayBill = () => {
@@ -11,6 +11,7 @@ const PayBill = () => {
   const [serviceFee, setServiceFee] = useState(0);
   const [billAmount, setBillAmount] = useState(0);
   const [totalBalance, setTotalBalance] = useState(0);
+  const currencyRef = useRef(null);
   const [billCurrency, setBillCurrency] = useState('USD');
   const [exchangeRates, setExchangeRates] = useState({});
   const [balance, setBalances] = useState({
@@ -74,12 +75,12 @@ const PayBill = () => {
       // bitcoin exchange logic
     } else if (e.target.value !== currentBill.currency) {
       lExchangeRate = exchangeRates[currentBill.currency].rates[e.target.value];
-      lServiceFee = currentBill.amount * lExchangeRate * 0.0001;
+      lServiceFee = currentBill.amount * lExchangeRate * exchangeRates.ServiceRate;
     }
 
     setBillCurrency(e.target.value);
     setTotalBalance(selectedCurrency[0].balance);
-    setBillAmount(currentBill.amount * lExchangeRate + lServiceFee);
+    setBillAmount(currentBill.amount * lExchangeRate);
     setExchangeRate(lExchangeRate.toFixed(9));
     setServiceFee(lServiceFee.toFixed(9));
   };
@@ -93,41 +94,21 @@ const PayBill = () => {
     }
   };
 
-  const completeTransaction = async () => {
-    const curBalance = totalBalance - billAmount;
-    const bs = await getBalance();
-    const d = [
-      { currency: 'USD', balance: balance.USD },
-      { currency: 'EUR', balance: balance.EUR },
-      { currency: 'GBP', balance: balance.GBP },
-      { currency: 'INR', balance: balance.INR },
-      { currency: 'RMB', balance: balance.RMB },
-      { currency: 'BITCOIN', balance: balance.BITCOIN },
-    ];
-    const selectedCurrency = d.filter((b) => b.currency === billCurrency);
-    selectedCurrency[0].balance = curBalance.toFixed(9);
-    if (bs.length) {
-      const b = _.keyBy(bs, 'currency');
-      d[0].id = b.USD.id;
-      d[1].id = b.EUR.id;
-      d[2].id = b.GBP.id;
-      d[3].id = b.INR.id;
-      d[4].id = b.RMB.id;
-      d[5].id = b.BITCOIN.id;
-    }
-    await setBalance(d);
-  };
-
   const payBill = async () => {
     if (currentBill.status === 'PAID' || currentBill.status === 'REJECTED' || currentBill.status === 'CANCELLED') {
       window.error('Bill status cannot be changed after settling');
     } else if (totalBalance < billAmount) {
       window.error('Insufficient balance for bill payment');
     } else {
-      await completeTransaction();
-      const paidBill = { ...currentBill, status: 'PAID' };
-      await editSendBill(paidBill);
+      const billData = {
+        ...currentBill,
+        currency: billCurrency,
+        amount: billAmount,
+        status: 'PAID',
+      };
+      await settlePayBill(billData);
       window.message('Bill was paid');
+      await loadBalance();
     }
   };
   return (
@@ -144,7 +125,7 @@ const PayBill = () => {
             <div>
               <div>
                 Currency to pay bill
-                <select defaultValue={currentBill.currency} onChange={handleBalance}>
+                <select ref = {currencyRef} defaultValue={currentBill.currency} onChange={handleBalance}>
                   {currencyList.map((c, i) => {
                     return <option key={i} value={c.code}>{c.code}</option>;
                   })}
@@ -152,7 +133,8 @@ const PayBill = () => {
               </div>
               <div className="small-margin-top">
                 Total Charge: {billAmount.toFixed(9)} <span />
-                Available Balance: {totalBalance}
+                Available Balance:
+                {currencyRef.current === null ? balance[currentBill.currency] : balance[currencyRef.current.value]}
               </div>
               <div>
                 ExchangeRate: {exchangeRate} <span />
