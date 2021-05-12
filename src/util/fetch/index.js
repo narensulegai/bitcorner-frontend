@@ -1,7 +1,5 @@
 import { auth } from '../../firebase';
 
-export const apiUrl = `${process.env.REACT_APP_API_URL || 'localhost:3000'}`;
-
 // eslint-disable-next-line no-async-promise-executor
 const call = (method, api, data = null) => new Promise(async (res, rej) => {
   const headers = { 'Content-Type': 'application/json' };
@@ -9,7 +7,7 @@ const call = (method, api, data = null) => new Promise(async (res, rej) => {
   if (token) {
     headers.authorization = token;
   }
-  fetch(`http://${apiUrl}/${api}`,
+  fetch(`/${api}`,
     {
       method,
       headers,

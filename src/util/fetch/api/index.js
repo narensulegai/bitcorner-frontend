@@ -1,4 +1,6 @@
-import { get, post, destroy, put, apiUrl } from '..';
+import {
+  get, post, destroy, put,
+} from '..';
 
 export const getBankAccount = () => get('bankAccount');
 export const updateBankAccount = (d) => post('bankAccount', d);
@@ -18,7 +20,7 @@ export const getBalance = () => get('balance');
 export const getExchangeRates = () => get('balance/rates');
 export const setBalance = (d) => post('balance', d);
 export const fileUrl = (fileId) => {
-  return `${apiUrl}/file/${fileId}`;
+  return `/file/${fileId}`;
 };
 
 export const currencyList = [
