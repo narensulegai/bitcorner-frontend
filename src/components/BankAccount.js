@@ -17,12 +17,13 @@ const BankAccount = () => {
     (async () => {
       const bankAccount = await getBankAccount();
       const { customer } = await getCustomer();
-      setCustomer(customer);
       if (bankAccount === null) {
         window.message('You dont have a bank account yet, please add one');
+        setBankAccount({}); // set default
       } else {
         setBankAccount(bankAccount);
       }
+      setCustomer(customer);
     })();
   }, []);
 
@@ -42,8 +43,8 @@ const BankAccount = () => {
     window.message('Updated your bank details');
   };
 
-  return bankAccount ? (
-    <div>
+  return (customer && bankAccount) ? (
+    <div className="body">
       <div>
         Welcome {customer.name}
         <h6>{customer.email}</h6>
