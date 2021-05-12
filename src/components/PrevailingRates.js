@@ -18,7 +18,7 @@ const PrevailingRates = () => {
 
   return (
     <div className="body">
-      <h2>Prevailing rates</h2>
+      <h2>Current market orders</h2>
       <table className="table">
         <thead>
           <tr>
