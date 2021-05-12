@@ -63,10 +63,10 @@ const CustomerHome = ({ history }) => {
         <Link to={r.customerTransactBitCoin}>Transact bitcoin</Link>
         <Link to={r.customerSendBill}>Send bill</Link>
         <Link to={r.customerPayBill}>Pay bill</Link>
-        <Link to={r.customerMarketStrategy}>Market strategy</Link>
-        <Link to={r.customerTransactionProcessing}>Transaction processing</Link>
-        <Link to={r.customerServiceFee}>Service fee</Link>
-        <Link to={r.customerMessaging}>Messaging</Link>
+        {/* <Link to={r.customerMarketStrategy}>Market strategy</Link> */}
+        {/* <Link to={r.customerTransactionProcessing}>Transaction processing</Link> */}
+        {/* <Link to={r.customerServiceFee}>Service fee</Link> */}
+        {/* <Link to={r.customerMessaging}>Messaging</Link> */}
         <Link to={r.customerReporting}>Reporting</Link>
         <button className="button no-margin-top" onClick={onLogout}>Logout</button>
       </div>
