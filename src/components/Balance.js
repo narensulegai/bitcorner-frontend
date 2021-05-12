@@ -36,18 +36,19 @@ const Balance = () => {
   }, []);
 
   const handleOnBalanceChange = (currency, b) => {
-    const newBalance = { ...balance, [currency]: parseFloat(b) };
+    const newBalance = { ...balance, [currency]: b };
     setBalances(newBalance);
   };
   const handleOnSave = async () => {
+    const f = (n) => (Number.isNaN(parseFloat(n)) ? 0 : parseFloat(n));
     const bs = await getBalance();
     const d = [
-      { currency: 'USD', balance: balance.USD },
-      { currency: 'EUR', balance: balance.EUR },
-      { currency: 'GBP', balance: balance.GBP },
-      { currency: 'INR', balance: balance.INR },
-      { currency: 'RMB', balance: balance.RMB },
-      { currency: 'BITCOIN', balance: balance.BITCOIN },
+      { currency: 'USD', balance: f(balance.USD) },
+      { currency: 'EUR', balance: f(balance.EUR) },
+      { currency: 'GBP', balance: f(balance.GBP) },
+      { currency: 'INR', balance: f(balance.INR) },
+      { currency: 'RMB', balance: f(balance.RMB) },
+      { currency: 'BITCOIN', balance: f(balance.BITCOIN) },
     ];
     if (bs.length) {
       const b = _.keyBy(bs, 'currency');
@@ -69,7 +70,8 @@ const Balance = () => {
       {customer ? (
         <div>
           <div>
-            {customer.customer.bankAccount.bankName}#{customer.customer.bankAccount.accountNumber}
+            Account number: <b>{customer.customer.bankAccount.accountNumber}</b>
+            ({customer.customer.bankAccount.bankName})
             <br />
             Primary currency {customer.customer.bankAccount.primaryCurrency}
           </div>
