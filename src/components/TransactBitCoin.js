@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Dialog } from '@material-ui/core';
-import { setTransactBitcoin, getTransactBitcoin } from '../util/fetch/api';
+import { setTransactBitcoin, getTransactBitcoin, allCurrencyList } from '../util/fetch/api';
 
 const TransactBitCoin = () => {
   const [transactBitcoins, setTransactBitcoins] = useState([]);
@@ -45,21 +45,13 @@ const TransactBitCoin = () => {
     setOpen(!open);
   };
   const handleOnCancelOrder = async () => {
-    const d = {
-      id: editOrder.id,
-      status: 'CANCELLED',
-    };
-    await setTransactBitcoin(d);
+    await setTransactBitcoin({ ...editOrder, status: 'CANCELLED' });
     toggleModel();
     setTransactBitcoins(await getTransactBitcoin());
   };
   const handleOnEditOrder = async () => {
     const amount = editAmountRef.current.value;
-    const d = {
-      amount,
-      id: editOrder.id,
-    };
-    await setTransactBitcoin(d);
+    await setTransactBitcoin({ ...editOrder, amount });
     toggleModel();
     setTransactBitcoins(await getTransactBitcoin());
   };
@@ -104,7 +96,11 @@ const TransactBitCoin = () => {
               Bitcoins <br /><input type="number" ref={bitcoinsRef} defaultValue="0" />
             </div>
             <div className="small-margin-top">
-              Currency <br /><input type="text" ref={currencyRef} defaultValue="USD" />
+              <select ref={currencyRef}>
+                {allCurrencyList.map((c, i) => {
+                  return <option key={i} value={c.code}>{c.code}</option>;
+                })}
+              </select>
             </div>
             <div className="small-margin-top">
               Market price &nbsp;<input type="checkbox" checked={marketOrder}
@@ -150,7 +146,7 @@ const TransactBitCoin = () => {
                         <td>{b.marketOrder ? 'Market order' : 'Limit order'} </td>
                         <td>{b.status}</td>
                         <td>
-                          <button className="button" onClick={() => { handleOnEdit(b); }}>
+                          <button className="button no-margin-top" onClick={() => { handleOnEdit(b); }}>
                             Edit
                           </button>
                         </td>
