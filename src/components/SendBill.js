@@ -90,15 +90,9 @@ const SendBill = () => {
             <input type="number" ref={editAmountRef} defaultValue={editSendBills.amount} />
           </div>
           <div className="flex flex-justify-content-space-between">
-            <button className="button" onClick={handleOnSaveEditSendBill}>
-              Edit bill
-            </button>
-            <button className="button" onClick={handleOnSaveCancelSendBill}>
-              Cancel bill
-            </button>
-            <button className="button" onClick={handleClose}>
-              Cancel
-            </button>
+            <button className="button" onClick={handleOnSaveEditSendBill}>Edit bill</button>
+            <button className="button" onClick={handleOnSaveCancelSendBill}>Cancel bill</button>
+            <button className="button" onClick={handleClose}>Cancel</button>
           </div>
         </div>
       </Dialog>
@@ -122,9 +116,7 @@ const SendBill = () => {
             Due date <br /><input type="date" ref={dueRef} />
           </div>
           <div>
-            <button className="button" onClick={handleOnSendBill}>
-              Send bill
-            </button>
+            <button className="button" onClick={handleOnSendBill}>Send bill</button>
           </div>
         </div>
         <div className="flex-full">
@@ -152,9 +144,7 @@ const SendBill = () => {
                     <td>{new Date(b.due).toDateString()}</td>
                     <td>{b.status}</td>
                     <td>
-                      <button className="button" onClick={() => { handleOnEditSendBill(b); }}>
-                        Edit
-                      </button>
+                      <button className="button no-margin-top" onClick={() => { handleOnEditSendBill(b); }}>Edit</button>
                     </td>
                   </tr>
                 );
