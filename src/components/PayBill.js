@@ -51,14 +51,7 @@ const PayBill = () => {
     })();
   }, []);
 
-  const handleOnBillChange = (e) => {
-    const bill = bills.filter((b) => {
-      return b.id === parseInt(e.target.value);
-    });
-    setCurrentBill(bill[0]);
-  };
-
-  const handleBalance = async (e) => {
+  const updateRates = async (currencyVal) => {
     const balances = [
       { currency: 'USD', balance: balance.USD },
       { currency: 'EUR', balance: balance.EUR },
@@ -70,19 +63,32 @@ const PayBill = () => {
 
     let lExchangeRate = 1;
     let lServiceFee = 0;
-    const selectedCurrency = balances.filter((b) => b.currency === e.target.value);
-    if (e.target.value === 'BITCOIN') {
+    const selectedCurrency = balances.filter((b) => b.currency === currencyVal);
+    if (currencyVal === 'BITCOIN') {
       // bitcoin exchange logic
-    } else if (e.target.value !== currentBill.currency) {
-      lExchangeRate = exchangeRates[currentBill.currency].rates[e.target.value];
+    } else if (currencyVal !== currentBill.currency) {
+      lExchangeRate = exchangeRates[currentBill.currency].rates[currencyVal];
       lServiceFee = currentBill.amount * lExchangeRate * exchangeRates.ServiceRate;
     }
 
-    setBillCurrency(e.target.value);
+    setBillCurrency(currencyVal);
     setTotalBalance(selectedCurrency[0].balance);
     setBillAmount(currentBill.amount * lExchangeRate);
     setExchangeRate(lExchangeRate.toFixed(9));
     setServiceFee(lServiceFee.toFixed(9));
+  };
+
+  const handleOnBillChange = (e) => {
+    const bill = bills.filter((b) => {
+      return b.id === parseInt(e.target.value);
+    });
+    setCurrentBill(bill[0]);
+    setBillCurrency(bill[0].currency);
+    updateRates(bill[0].currency);
+  };
+
+  const handleBalance = async (e) => {
+    updateRates(e.target.value);
   };
   const rejectBill = async () => {
     if (currentBill.status === 'PAID' || currentBill.status === 'REJECTED' || currentBill.status === 'CANCELLED') {
@@ -125,7 +131,7 @@ const PayBill = () => {
             <div>
               <div>
                 Currency to pay bill
-                <select ref = {currencyRef} defaultValue={currentBill.currency} onChange={handleBalance}>
+                <select value={billCurrency} ref={currencyRef} defaultValue={currentBill.currency} onChange={handleBalance}>
                   {currencyList.map((c, i) => {
                     return <option key={i} value={c.code}>{c.code}</option>;
                   })}
@@ -134,7 +140,7 @@ const PayBill = () => {
               <div className="small-margin-top">
                 Total Charge: {billAmount.toFixed(9)} <span />
                 Available Balance:
-                {currencyRef.current === null ? balance[currentBill.currency] : balance[currencyRef.current.value]}
+                {totalBalance}
               </div>
               <div>
                 ExchangeRate: {exchangeRate} <span />
