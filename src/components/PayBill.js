@@ -23,66 +23,85 @@ const PayBill = () => {
     BITCOIN: 0,
   });
 
-  const updateRates = async (currencyVal) => {
+  const updateRates = async (currencyVal, bill = null, exchangeRatesValue = null, balancesValue = null) => {
+    const balancesData = balancesValue ? balancesValue : balance;
+    console.log(balancesData);
     const balances = [
-      { currency: 'USD', balance: balance.USD },
-      { currency: 'EUR', balance: balance.EUR },
-      { currency: 'GBP', balance: balance.GBP },
-      { currency: 'INR', balance: balance.INR },
-      { currency: 'RMB', balance: balance.RMB },
-      { currency: 'BITCOIN', balance: balance.BITCOIN },
+      { currency: 'USD', balance: balancesData.USD },
+      { currency: 'EUR', balance: balancesData.EUR },
+      { currency: 'GBP', balance: balancesData.GBP },
+      { currency: 'INR', balance: balancesData.INR },
+      { currency: 'RMB', balance: balancesData.RMB },
+      { currency: 'BITCOIN', balance: balancesData.BITCOIN },
     ];
+    console.log("after");
 
+    const temp = bill ? bill : currentBill;
     let lExchangeRate = 1;
     let lServiceFee = 0;
+
+    const exchangeRatesData = exchangeRatesValue ? exchangeRatesValue : exchangeRates; 
+
+
     const selectedCurrency = balances.filter((b) => b.currency === currencyVal);
     if (currencyVal === 'BITCOIN') {
       // bitcoin exchange logic
-    } else if (currencyVal !== currentBill.currency) {
-      lExchangeRate = exchangeRates[currentBill.currency].rates[currencyVal];
-      lServiceFee = currentBill.amount * lExchangeRate * exchangeRates.ServiceRate;
+    } else if (currencyVal !== temp.currency) {
+      lExchangeRate = exchangeRatesData[temp.currency].rates[currencyVal];
+      lServiceFee = temp.amount * lExchangeRate * exchangeRatesData.ServiceRate;
     }
 
     setBillCurrency(currencyVal);
-    setTotalBalance(selectedCurrency[0].balance);
-    setBillAmount(currentBill.amount * lExchangeRate);
+
+    const totalBalance = balances.filter((balance) => balance.currency === currencyVal);
+    console.log(totalBalance[0]);
+    setTotalBalance(totalBalance[0].balance);
+    setBillAmount(temp.amount * lExchangeRate);
     setExchangeRate(lExchangeRate.toFixed(9));
     setServiceFee(lServiceFee.toFixed(9));
   };
 
-  const loadBalance = async (currency) => {
+  const loadBalance = async (currency, bills = null, exchangeRates = null) => {
     const balances = await getBalance();
     if (balances.length) {
       const b = _.keyBy(balances, 'currency');
-      await setBalances({
+
+      const temp = {
         USD: b.USD.balance,
         EUR: b.EUR.balance,
         GBP: b.GBP.balance,
         INR: b.INR.balance,
         RMB: b.RMB.balance,
         BITCOIN: b.BITCOIN.balance,
-      });
-      updateRates(currency);
+      };
+      setBalances(temp);
+      updateRates(currency, bills, exchangeRates, temp);
     }
   };
 
-  const loadInitialData = async (billsValue) => {
-    if (billsValue.length) {
-      await setBills(billsValue);
-      await setCurrentBill(billsValue[0]);
-      await setBillAmount(billsValue[0].amount);
-      await loadBalance(billsValue[0].currency);
+  const loadInitialData = async (exchangeRates = null) => {
+    let billsValue = await getBill();
+    if (billsValue.length > 0) {
+      billsValue = billsValue.filter((bill) => bill.status === 'WAITING');
+      if (billsValue.length > 0) {
+        setBills(billsValue);
+        setCurrentBill(billsValue[0]);
+        setBillAmount(billsValue[0].amount);
+        loadBalance(billsValue[0].currency, billsValue[0], exchangeRates);
+      }
     }
   };
 
   useEffect(() => {
     (async () => {
-      await setExchangeRates(await getExchangeRates());
-      loadInitialData(await getBill());
+      const exchangeRates = await getExchangeRates();
+      setExchangeRates(exchangeRates);
+      loadInitialData(exchangeRates);
     })();
   }, []);
 
   const handleOnBillChange = (e) => {
+    console.log(e);
     const bill = bills.filter((b) => {
       return b.id === parseInt(e.target.value);
     });
@@ -94,6 +113,7 @@ const PayBill = () => {
   const handleBalance = async (e) => {
     updateRates(e.target.value);
   };
+
   const rejectBill = async () => {
     if (currentBill.status === 'PAID' || currentBill.status === 'REJECTED' || currentBill.status === 'CANCELLED') {
       window.error('Bill status cannot be changed after settling');
@@ -116,16 +136,16 @@ const PayBill = () => {
         amount: billAmount,
         status: 'PAID',
       };
-      await settlePayBill(billData);
+      console.log('Before settle bill');
+      console.log(await settlePayBill(billData));
+      console.log('after settle bill');
       window.message('Bill was paid');
-      await loadBalance();
+      await loadBalance(billCurrency);
     }
   };
   return (
     <div className="body">
-      Select a bill to pay&nbsp;<select onChange={() => {
-      handleOnBillChange();
-    }}>
+      Select a bill to pay&nbsp;<select onChange={handleOnBillChange}>
         {bills.map((b) => {
           return <option value={b.id} key={b.id}>#{b.id} from {b.customer.name}</option>;
         })}
@@ -137,7 +157,7 @@ const PayBill = () => {
             <div>
               <div>
                 Currency to pay bill
-                <select value={billCurrency} ref={currencyRef} defaultValue={currentBill.currency} onChange={handleBalance}>
+                <select value={billCurrency} ref={currencyRef} onChange={handleBalance}>
                   {currencyList.map((c, i) => {
                     return <option key={i} value={c.code}>{c.code}</option>;
                   })}
