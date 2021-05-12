@@ -1,6 +1,4 @@
-import {
-  get, post, destroy, put, apiUrl,
-} from '..';
+import { get, post, destroy, put, apiUrl } from '..';
 
 export const getBankAccount = () => get('bankAccount');
 export const updateBankAccount = (d) => post('bankAccount', d);
@@ -29,4 +27,5 @@ export const currencyList = [
   { code: 'INR' },
   { code: 'EUR' },
   { code: 'RMB' },
+  { code: 'BITCOIN' },
 ];
