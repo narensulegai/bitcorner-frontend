@@ -23,34 +23,6 @@ const PayBill = () => {
     BITCOIN: 0,
   });
 
-  const loadBalance = async () => {
-    const balances = await getBalance();
-    if (balances.length) {
-      const b = _.keyBy(balances, 'currency');
-      setBalances({
-        USD: b.USD.balance,
-        EUR: b.EUR.balance,
-        GBP: b.GBP.balance,
-        INR: b.INR.balance,
-        RMB: b.RMB.balance,
-        BITCOIN: b.BITCOIN.balance,
-      });
-    }
-  };
-
-  useEffect(() => {
-    (async () => {
-      const bills = await getBill();
-      if (bills.length) {
-        setBills(bills);
-        setCurrentBill(bills[0]);
-        setBillAmount(bills[0].amount);
-      }
-      setExchangeRates(await getExchangeRates());
-      await loadBalance();
-    })();
-  }, []);
-
   const updateRates = async (currencyVal) => {
     const balances = [
       { currency: 'USD', balance: balance.USD },
@@ -77,6 +49,38 @@ const PayBill = () => {
     setExchangeRate(lExchangeRate.toFixed(9));
     setServiceFee(lServiceFee.toFixed(9));
   };
+
+  const loadBalance = async (currency) => {
+    const balances = await getBalance();
+    if (balances.length) {
+      const b = _.keyBy(balances, 'currency');
+      await setBalances({
+        USD: b.USD.balance,
+        EUR: b.EUR.balance,
+        GBP: b.GBP.balance,
+        INR: b.INR.balance,
+        RMB: b.RMB.balance,
+        BITCOIN: b.BITCOIN.balance,
+      });
+      updateRates(currency);
+    }
+  };
+
+  const loadInitialData = async (billsValue) => {
+    if (billsValue.length) {
+      await setBills(billsValue);
+      await setCurrentBill(billsValue[0]);
+      await setBillAmount(billsValue[0].amount);
+      await loadBalance(billsValue[0].currency);
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      await setExchangeRates(await getExchangeRates());
+      loadInitialData(await getBill());
+    })();
+  }, []);
 
   const handleOnBillChange = (e) => {
     const bill = bills.filter((b) => {
@@ -119,7 +123,9 @@ const PayBill = () => {
   };
   return (
     <div className="body">
-      Select a bill to pay&nbsp;<select onChange={handleOnBillChange}>
+      Select a bill to pay&nbsp;<select onChange={() => {
+      handleOnBillChange();
+    }}>
         {bills.map((b) => {
           return <option value={b.id} key={b.id}>#{b.id} from {b.customer.name}</option>;
         })}
