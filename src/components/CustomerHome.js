@@ -58,8 +58,8 @@ const CustomerHome = ({ history }) => {
     <div>
       <div className="header">
         <Link to={r.customerProfile}>Bank account</Link>
-        <Link to={r.prevailingRates}>Prevailing rates</Link>
         <Link to={r.customerBalance}>Balance</Link>
+        <Link to={r.prevailingRates}>Market orders</Link>
         <Link to={r.customerTransactBitCoin}>Transact bitcoin</Link>
         <Link to={r.customerSendBill}>Send bill</Link>
         <Link to={r.customerPayBill}>Pay bill</Link>
