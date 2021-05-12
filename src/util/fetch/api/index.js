@@ -29,5 +29,6 @@ export const currencyList = [
   { code: 'INR' },
   { code: 'EUR' },
   { code: 'RMB' },
-  { code: 'BITCOIN' },
 ];
+
+export const allCurrencyList = [...currencyList, { code: 'BITCOIN' }];
