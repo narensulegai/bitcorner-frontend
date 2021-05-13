@@ -5,8 +5,7 @@ import {
   getBalance,
   getBill,
   getExchangeRates,
-  currencyList,
-  setBalance,
+  allCurrencyList,
   settlePayBill,
 } from '../util/fetch/api';
 
@@ -184,7 +183,7 @@ const PayBill = () => {
                 ref={currencyRef}
                 onChange={handleBalance}
               >
-                {currencyList.map((c, i) => {
+                {allCurrencyList.map((c, i) => {
                   return (
                     <option key={i} value={c.code}>
                       {c.code}
