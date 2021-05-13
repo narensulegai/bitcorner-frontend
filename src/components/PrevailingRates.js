@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { getPrevailingRates } from '../util/fetch/api';
+import { getPrevailingRates, getReports } from '../util/fetch/api';
 
 const PrevailingRates = () => {
   const [prevailingRates, setPrevailingRates] = useState([]);
+  const [reports, setReports] = useState(null);
 
   useEffect(() => {
     (async () => {
       setPrevailingRates(await getPrevailingRates());
+      setReports(await getReports());
     })();
     const interval = setInterval(async () => {
       setPrevailingRates(await getPrevailingRates());
@@ -18,7 +20,26 @@ const PrevailingRates = () => {
 
   return (
     <div className="body">
-      <h2>Current market orders</h2>
+      <h2>Current market price</h2>
+      {reports
+        ? (
+          <div className="small-margin-top">
+            <div>Current ask price</div>
+            <div>
+              {reports.askPrice.map((a) => {
+                return <div>{a !== null ? `${a.currency} ${a.amount}` : null}</div>;
+              })}
+            </div>
+            <div>
+              <div>Current bid price</div>
+              {reports.bidPrice.map((a) => {
+                return <div>{a !== null ? `${a.currency} ${a.amount}` : null}</div>;
+              })}
+            </div>
+          </div>
+        )
+        : <div>Showing latest price</div>}
+      <hr />
       <table className="table">
         <thead>
           <tr>
