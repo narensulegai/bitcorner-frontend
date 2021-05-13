@@ -26,12 +26,14 @@ const PrevailingRates = () => {
           <div className="small-margin-top">
             <div>Current ask price</div>
             <div>
+              {reports.askPrice.length === 0 && <div>No ask price to show</div>}
               {reports.askPrice.map((a) => {
                 return <div>{a !== null ? `${a.currency} ${a.amount}` : null}</div>;
               })}
             </div>
             <div>
               <div>Current bid price</div>
+              {reports.bidPrice.length === 0 && <div>No bid price to show</div>}
               {reports.bidPrice.map((a) => {
                 return <div>{a !== null ? `${a.currency} ${a.amount}` : null}</div>;
               })}

@@ -19,9 +19,9 @@ const Reporting = () => {
             <h3>Account balance</h3>
             <hr />
             <div>
-              {reports.bitcornerBalance.map((b) => {
+              {reports.bitcornerBalance ? reports.bitcornerBalance.map((b) => {
                 return <div>{b.currency} {b.balance}</div>;
-              })}
+              }) : <div>No balance to show</div>}
             </div>
             <h3 className="small-margin-top">Stats</h3>
             <hr />
