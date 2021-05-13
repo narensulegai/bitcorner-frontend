@@ -32,9 +32,9 @@ const PayBill = () => {
     currencyVal,
     bill = null,
     exchangeRatesValue = null,
-    balancesValue = null
+    balancesValue = null,
   ) => {
-    const balancesData = balancesValue ? balancesValue : balance;
+    const balancesData = balancesValue || balance;
     const balances = [
       { currency: 'USD', balance: balancesData.USD },
       { currency: 'EUR', balance: balancesData.EUR },
@@ -44,13 +44,11 @@ const PayBill = () => {
       { currency: 'BITCOIN', balance: balancesData.BITCOIN },
     ];
 
-    const temp = bill ? bill : currentBill;
+    const temp = bill || currentBill;
     let lExchangeRate = 1;
     let lServiceFee = 0;
 
-    const exchangeRatesData = exchangeRatesValue
-      ? exchangeRatesValue
-      : exchangeRates;
+    const exchangeRatesData = exchangeRatesValue || exchangeRates;
 
     lExchangeRate = exchangeRatesData[temp.currency].rates[currencyVal];
     if (currencyVal !== temp.currency) {
@@ -60,9 +58,8 @@ const PayBill = () => {
     setBillCurrency(currencyVal);
 
     const totalBalance = balances.filter(
-      (balance) => balance.currency === currencyVal
+      (balance) => balance.currency === currencyVal,
     );
-    console.log(totalBalance[0]);
     setTotalBalance(totalBalance[0].balance);
     setBillAmount(temp.amount * lExchangeRate);
     setExchangeRate(lExchangeRate.toFixed(9));
@@ -109,7 +106,6 @@ const PayBill = () => {
   }, []);
 
   const handleOnBillChange = (e) => {
-    console.log(e);
     const bill = bills.filter((b) => {
       return b.id === parseInt(e.target.value);
     });
@@ -124,9 +120,9 @@ const PayBill = () => {
 
   const rejectBill = async () => {
     if (
-      currentBill.status === 'PAID' ||
-      currentBill.status === 'REJECTED' ||
-      currentBill.status === 'CANCELLED'
+      currentBill.status === 'PAID'
+      || currentBill.status === 'REJECTED'
+      || currentBill.status === 'CANCELLED'
     ) {
       window.error('Bill status cannot be changed after settling');
     } else {
@@ -138,9 +134,9 @@ const PayBill = () => {
 
   const payBill = async () => {
     if (
-      currentBill.status === 'PAID' ||
-      currentBill.status === 'REJECTED' ||
-      currentBill.status === 'CANCELLED'
+      currentBill.status === 'PAID'
+      || currentBill.status === 'REJECTED'
+      || currentBill.status === 'CANCELLED'
     ) {
       window.error('Bill status cannot be changed after settling');
     } else if (totalBalance < billAmount) {
@@ -152,9 +148,7 @@ const PayBill = () => {
         amount: billAmount,
         status: 'PAID',
       };
-      console.log('Before settle bill');
-      console.log(await settlePayBill(billData));
-      console.log('after settle bill');
+      await settlePayBill(billData);
       window.message('Bill was paid');
       await loadBalance(billCurrency);
     }
@@ -181,8 +175,7 @@ const PayBill = () => {
               <select
                 value={billCurrency}
                 ref={currencyRef}
-                onChange={handleBalance}
-              >
+                onChange={handleBalance}>
                 {allCurrencyList.map((c, i) => {
                   return (
                     <option key={i} value={c.code}>
@@ -193,18 +186,16 @@ const PayBill = () => {
               </select>
             </div>
             <div className="small-margin-top">
-              Total Charge: {billAmount.toFixed(9)} <span />
-              Available Balance:
-              {totalBalance}
+              Total Charge: {billAmount.toFixed(9)}
+              Available Balance: {totalBalance}
             </div>
             <div>
-              ExchangeRate: {exchangeRate} <span />
+              ExchangeRate: {exchangeRate}
               Service Fee: {serviceFee}
             </div>
             <hr />
             <div>
-              Pay to {currentBill.customer.name} (
-              {currentBill.customer.bankAccount.bankName})
+              Pay to {currentBill.customer.name} ({currentBill.customer.bankAccount.bankName})
             </div>
             <div>
               {currentBill.currency} {currentBill.amount} {currentBill.status}
