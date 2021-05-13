@@ -80,11 +80,13 @@ const PayBill = () => {
         BITCOIN: b.BITCOIN.balance,
       };
       setBalances(temp);
-      updateRates(currency, bills, exchangeRates, temp);
+      await updateRates(currency, bills, exchangeRates, temp);
     }
   };
 
   const loadInitialData = async (exchangeRates = null) => {
+    setBills([]);
+    setCurrentBill(null);
     let billsValue = await getBill();
     if (billsValue.length > 0) {
       billsValue = billsValue.filter((bill) => bill.status === 'WAITING');
@@ -92,7 +94,7 @@ const PayBill = () => {
         setBills(billsValue);
         setCurrentBill(billsValue[0]);
         setBillAmount(billsValue[0].amount);
-        loadBalance(billsValue[0].currency, billsValue[0], exchangeRates);
+        await loadBalance(billsValue[0].currency, billsValue[0], exchangeRates);
       }
     }
   };
@@ -101,33 +103,34 @@ const PayBill = () => {
     (async () => {
       const exchangeRates = await getExchangeRates();
       setExchangeRates(exchangeRates);
-      loadInitialData(exchangeRates);
+      await loadInitialData(exchangeRates);
     })();
   }, []);
 
-  const handleOnBillChange = (e) => {
+  const handleOnBillChange = async (e) => {
     const bill = bills.filter((b) => {
       return b.id === parseInt(e.target.value);
     });
     setCurrentBill(bill[0]);
     setBillCurrency(bill[0].currency);
-    updateRates(bill[0].currency, bill[0]);
+    await updateRates(bill[0].currency, bill[0]);
   };
 
   const handleBalance = async (e) => {
-    updateRates(e.target.value);
+    await updateRates(e.target.value);
   };
 
   const rejectBill = async () => {
     if (
       currentBill.status === 'PAID'
-      || currentBill.status === 'REJECTED'
-      || currentBill.status === 'CANCELLED'
+            || currentBill.status === 'REJECTED'
+            || currentBill.status === 'CANCELLED'
     ) {
       window.error('Bill status cannot be changed after settling');
     } else {
       const rejectedBill = { ...currentBill, status: 'REJECTED' };
       await editSendBill(rejectedBill);
+      await loadInitialData(exchangeRates);
       window.message('Bill was rejected');
     }
   };
@@ -135,8 +138,8 @@ const PayBill = () => {
   const payBill = async () => {
     if (
       currentBill.status === 'PAID'
-      || currentBill.status === 'REJECTED'
-      || currentBill.status === 'CANCELLED'
+            || currentBill.status === 'REJECTED'
+            || currentBill.status === 'CANCELLED'
     ) {
       window.error('Bill status cannot be changed after settling');
     } else if (totalBalance < billAmount) {
@@ -149,68 +152,77 @@ const PayBill = () => {
         status: 'PAID',
       };
       await settlePayBill(billData);
+      await loadInitialData(exchangeRates);
       window.message('Bill was paid');
-      await loadBalance(billCurrency);
     }
   };
   return (
     <div className="body">
-      Select a bill to pay&nbsp;
-      <select onChange={handleOnBillChange}>
-        {bills.map((b) => {
-          return (
-            <option value={b.id} key={b.id}>
-              #{b.id} from {b.customer.name}
-            </option>
-          );
-        })}
-      </select>
-      {currentBill == null ? (
-        <div>Please select a bill to view</div>
-      ) : (
-        <div>
-          <div>
+      {bills.length ? (
+        <>
+          Select a bill to pay&nbsp;
+          <select onChange={handleOnBillChange}>
+            {bills.map((b) => {
+              return (
+                <option value={b.id} key={b.id}>
+                  Bill #{b.id} from {b.customer.name}
+                </option>
+              );
+            })}
+          </select>
+          {currentBill == null ? (
+            <div>Please select a bill to view</div>
+          ) : (
             <div>
-              Currency to pay bill
-              <select
-                value={billCurrency}
-                ref={currencyRef}
-                onChange={handleBalance}>
-                {allCurrencyList.map((c, i) => {
-                  return (
-                    <option key={i} value={c.code}>
-                      {c.code}
-                    </option>
-                  );
-                })}
-              </select>
+              <div>
+                <div>
+                  Pay with currency&nbsp;&nbsp;
+                  <select value={billCurrency} ref={currencyRef} onChange={handleBalance}
+                    className="no-margin-top">
+                    {allCurrencyList.map((c, i) => {
+                      return (
+                        <option key={i} value={c.code}>
+                          {c.code}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div className="small-margin-top">
+                  Total to pay: <b>{billAmount.toFixed(9)}</b>
+                </div>
+                <div>
+                  Available balance: <b>{totalBalance}</b>
+                </div>
+                <div>
+                  Exchange rate: <b>{exchangeRate}</b>
+                </div>
+                <div>
+                  Service Fee: <b>{serviceFee}</b>
+                </div>
+                <hr />
+                <div>
+                  Pay to <b>{currentBill.customer.name}</b>
+                  ({currentBill.customer.bankAccount.bankName})
+                </div>
+                <div>
+                  <b>{currentBill.currency}{currentBill.amount}</b> (Status : {currentBill.status})
+                </div>
+              </div>
+              <div className="flex-justify-content-space-between">
+                <button className="button" onClick={rejectBill}>
+                  Reject
+                </button>
+                <button className="button small-margin-left" onClick={payBill}>
+                  Pay
+                </button>
+              </div>
             </div>
-            <div className="small-margin-top">
-              Total Charge: {billAmount.toFixed(9)}
-              Available Balance: {totalBalance}
-            </div>
-            <div>
-              ExchangeRate: {exchangeRate}
-              Service Fee: {serviceFee}
-            </div>
-            <hr />
-            <div>
-              Pay to {currentBill.customer.name} ({currentBill.customer.bankAccount.bankName})
-            </div>
-            <div>
-              {currentBill.currency} {currentBill.amount} {currentBill.status}
-            </div>
-          </div>
-          <div className="flex-justify-content-space-between">
-            <button className="button" onClick={rejectBill}>
-              Reject
-            </button>
-            <button className="button small-margin-left" onClick={payBill}>
-              Pay
-            </button>
-          </div>
-        </div>
-      )}
+          )}
+        </>
+      ) : <span>No bills to pay</span>}
+      <hr />
+
     </div>
   );
 };
