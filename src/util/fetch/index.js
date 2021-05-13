@@ -7,7 +7,7 @@ const call = (method, api, data = null) => new Promise(async (res, rej) => {
   if (token) {
     headers.authorization = token;
   }
-  fetch(`/${api}`,
+  fetch(`/api/${api}`,
     {
       method,
       headers,
