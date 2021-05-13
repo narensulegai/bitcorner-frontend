@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Dialog } from '@material-ui/core';
 import {
-  getSendBill, addSendBill, editSendBill, getBankAccount, currencyList,
+  getSendBill, addSendBill, editSendBill, getBankAccount, allCurrencyList,
 } from '../util/fetch/api';
 
 const SendBill = () => {
@@ -114,7 +114,7 @@ const SendBill = () => {
             <div className="small-margin-top">
               Currency <br />
               <select ref={currencyRef} defaultValue={bankAccount.primaryCurrency}>
-                {currencyList.map((c, i) => {
+                {allCurrencyList.map((c, i) => {
                   return <option key={i} value={c.code}>{c.code}</option>;
                 })}
               </select>
