@@ -46,7 +46,7 @@ h2 {
     --primary: #039494;
 }
 
-#msg, #err {
+#loading, #msg, #err {
     color: #fa2424;
     width: 300px;
     position: fixed;
@@ -60,12 +60,16 @@ h2 {
     box-shadow: 1px 1px 1px 1px black;
 }
 
-#msg:empty, #err:empty {
+#loading, #msg:empty, #err:empty {
     display: none;
 }
 
 #msg {
     color: green;
+}
+
+#loading {
+    color: black;
 }
 
 select, .small-margin-top, .button, input[type="text"], input[type="password"], input[type="number"], input[type="date"] {

@@ -11,6 +11,14 @@ window.message = (msg) => {
   const e = window.document.getElementById('msg');
   e.innerText = msg;
 };
+window.showLoading = () => {
+  const e = window.document.getElementById('loading');
+  e.style.display = 'block';
+};
+window.hideLoading = () => {
+  const e = window.document.getElementById('loading');
+  e.style.display = 'none';
+};
 
 ReactDOM.render(
   <App />,

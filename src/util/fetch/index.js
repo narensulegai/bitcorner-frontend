@@ -1,7 +1,10 @@
 import { auth } from '../../firebase';
 
+let callCount = 0;
 // eslint-disable-next-line no-async-promise-executor
 const call = (method, api, data = null) => new Promise(async (res, rej) => {
+  callCount += 1;
+  window.showLoading();
   const headers = { 'Content-Type': 'application/json' };
   const token = await auth.currentUser.getIdToken();
   if (token) {
@@ -17,6 +20,8 @@ const call = (method, api, data = null) => new Promise(async (res, rej) => {
       mode: 'cors',
     })
     .then((r) => {
+      callCount -= 1;
+      if (callCount === 0) window.hideLoading();
       r.json()
         .then((d) => {
           if (r.status === 200) {
