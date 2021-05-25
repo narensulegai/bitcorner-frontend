@@ -12,7 +12,7 @@ import TransactionProcessing from './TransactionProcessing';
 import ServiceFee from './ServiceFee';
 import Messaging from './Messaging';
 import Reporting from './Reporting';
-import { getCustomer } from '../util/fetch/api';
+import { getBankAccount, getCustomer } from '../util/fetch/api';
 
 const CustomerHome = ({ history }) => {
 
@@ -23,11 +23,13 @@ const CustomerHome = ({ history }) => {
 
   const { logout } = useAuth();
   const [customer, setCustomer] = useState(null);
+  const [bankAccount, setBankAccount] = useState(null);
   const r = window.appRoutes;
 
   useEffect(() => {
     (async () => {
       setCustomer(await getCustomer());
+      setBankAccount(await getBankAccount());
     })();
   }, []);
 
@@ -58,16 +60,12 @@ const CustomerHome = ({ history }) => {
     <div>
       <div className="header">
         <Link to={r.customerProfile}>Bank account</Link>
-        <Link to={r.customerBalance}>Balance</Link>
-        <Link to={r.prevailingRates}>Market orders</Link>
-        <Link to={r.customerTransactBitCoin}>Transact bitcoin</Link>
-        <Link to={r.customerSendBill}>Send bill</Link>
-        <Link to={r.customerPayBill}>Pay bill</Link>
-        {/* <Link to={r.customerMarketStrategy}>Market strategy</Link> */}
-        {/* <Link to={r.customerTransactionProcessing}>Transaction processing</Link> */}
-        {/* <Link to={r.customerServiceFee}>Service fee</Link> */}
-        {/* <Link to={r.customerMessaging}>Messaging</Link> */}
-        <Link to={r.customerReporting}>Reporting</Link>
+        {bankAccount && <Link to={r.customerBalance}>Balance</Link>}
+        {bankAccount && <Link to={r.prevailingRates}>Market orders</Link>}
+        {bankAccount && <Link to={r.customerTransactBitCoin}>Transact bitcoin</Link>}
+        {bankAccount && <Link to={r.customerSendBill}>Send bill</Link>}
+        {bankAccount && <Link to={r.customerPayBill}>Pay bill</Link>}
+        {bankAccount && <Link to={r.customerReporting}>Reporting</Link>}
         <button className="button no-margin-top" onClick={onLogout}>Logout</button>
       </div>
       <div className="body">

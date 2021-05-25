@@ -36,10 +36,12 @@ const BankAccount = () => {
       address: addressRef.current.value,
       primaryCurrency: currencyRef.current.value,
     };
-
+    const toReload = await getBankAccount() === null;
     await updateBankAccount(bankDetails);
-    const bankAccount = await getBankAccount();
-    setBankAccount(bankAccount);
+    setBankAccount(await getBankAccount());
+    if (toReload) {
+      window.location.reload(false);
+    }
     window.message('Updated your bank details');
   };
 
