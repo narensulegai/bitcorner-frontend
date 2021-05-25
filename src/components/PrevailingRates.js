@@ -25,19 +25,34 @@ const PrevailingRates = () => {
       <div><i>Prices are updated every 5 seconds</i></div>
       {reports
         ? (
-          <div className="small-margin-top">
-            <div>
-              Latest ask price {reports.lastestPrices.latestAskPrice}
-            </div>
-            <div>
-              Latest bid price {reports.lastestPrices.latestBidPrice}
-            </div>
-            <div>
-              Latest transaction price {reports.lastestPrices.latestTransactionPrice}
-            </div>
+          <div>
+            <table className="table medium-margin-top">
+              <thead>
+                <tr>
+                  <td>Latest ask price</td>
+                  <td>Latest bid price</td>
+                  <td>Latest transaction price</td>
+                  <td>Currency</td>
+                </tr>
+              </thead>
+              <tbody>
+                {reports.lastestPrices.map((p, i) => {
+                  return (
+                    <tr key={i}>
+                      <td>{p.latestAskPrice}</td>
+                      <td>{p.latestBidPrice}</td>
+                      <td>{p.latestTransactionPrice}</td>
+                      <td>{p.currency}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )
         : <div>Showing latest price</div>}
+      <hr />
+      <h3>Current orders</h3>
       <table className="table medium-margin-top">
         <thead>
           <tr>
