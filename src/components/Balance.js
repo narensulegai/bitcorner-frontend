@@ -70,10 +70,10 @@ const Balance = () => {
       {customer ? (
         <div>
           <div>
-            Account number: <b>{customer.customer.bankAccount.accountNumber}</b>
-            ({customer.customer.bankAccount.bankName})
+            Account number <b>{customer.customer.bankAccount.accountNumber}</b>
+            &nbsp;&nbsp;({customer.customer.bankAccount.bankName})
             <br />
-            Primary currency {customer.customer.bankAccount.primaryCurrency}
+            Primary currency <b>{customer.customer.bankAccount.primaryCurrency}</b>
           </div>
           <div>
             <div className="small-margin-top">

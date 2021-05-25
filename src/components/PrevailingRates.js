@@ -12,6 +12,7 @@ const PrevailingRates = () => {
     })();
     const interval = setInterval(async () => {
       setPrevailingRates(await getPrevailingRates());
+      setReports(await getReports());
     }, 5000);
     return () => {
       clearInterval(interval);
@@ -21,28 +22,23 @@ const PrevailingRates = () => {
   return (
     <div className="body">
       <h2>Current market price</h2>
+      <div><i>Prices are updated every 5 seconds</i></div>
       {reports
         ? (
           <div className="small-margin-top">
-            <div>Current ask price</div>
             <div>
-              {reports.askPrice.length === 0 && <div>No ask price to show</div>}
-              {reports.askPrice.map((a, i) => {
-                return <div key={i}>{a !== null ? `${a.currency} ${a.amount}` : null}</div>;
-              })}
+              Latest ask price {reports.lastestPrices.latestAskPrice}
             </div>
             <div>
-              <div>Current bid price</div>
-              {reports.bidPrice.length === 0 && <div>No bid price to show</div>}
-              {reports.bidPrice.map((a, i) => {
-                return <div key={i}>{a !== null ? `${a.currency} ${a.amount}` : null}</div>;
-              })}
+              Latest bid price {reports.lastestPrices.latestBidPrice}
+            </div>
+            <div>
+              Latest transaction price {reports.lastestPrices.latestTransactionPrice}
             </div>
           </div>
         )
         : <div>Showing latest price</div>}
-      <hr />
-      <table className="table">
+      <table className="table medium-margin-top">
         <thead>
           <tr>
             <td>Order Id</td>

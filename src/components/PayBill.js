@@ -175,7 +175,7 @@ const PayBill = () => {
           ) : (
             <div>
               <div>
-                <div>
+                <div className="small-margin-top">
                   Pay with currency&nbsp;&nbsp;
                   <select value={billCurrency} ref={currencyRef} onChange={handleBalance}
                     className="no-margin-top">
@@ -203,7 +203,7 @@ const PayBill = () => {
                 <hr />
                 <div>
                   Pay to <b>{currentBill.customer.name}</b>
-                  ({currentBill.customer.bankAccount.bankName})
+                  &nbsp;({currentBill.customer.bankAccount.bankName})
                 </div>
                 <div>
                   <b>{currentBill.currency}{currentBill.amount}</b> (Status : {currentBill.status})
