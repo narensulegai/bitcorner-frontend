@@ -21,7 +21,7 @@ const TransactBitCoin = () => {
 
   const handleOnSellBitcoin = async () => {
     let amount = null;
-    const bitcoins = bitcoinsRef.current.value;
+    const bitcoins = parseInt(bitcoinsRef.current.value);
     const currency = currencyRef.current.value;
     if (!marketOrder) {
       amount = amountRef.current.value;
@@ -93,7 +93,7 @@ const TransactBitCoin = () => {
               Is buy order&nbsp;<input type="checkbox" ref={isBuyRef} />
             </div>
             <div className="small-margin-top">
-              Bitcoins <br /><input type="number" ref={bitcoinsRef} defaultValue="0" />
+              Bitcoins (integer value only)<br /><input type="number" ref={bitcoinsRef} defaultValue="0" />
             </div>
             <div className="small-margin-top">
               <select ref={currencyRef}>
